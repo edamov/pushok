@@ -15,9 +15,16 @@ use Jose\Factory\JWKFactory;
 use Jose\Factory\JWSFactory;
 use Pushok\AuthProviderInterface;
 
-final class Token implements AuthProviderInterface
+class Token implements AuthProviderInterface
 {
     const HASH_ALGORITHM = 'ES256';
+
+    /**
+     * Generated auth token
+     *
+     * @var string
+     */
+    private $token;
 
     /**
      * Path to p8 private key
@@ -51,6 +58,13 @@ final class Token implements AuthProviderInterface
     private $teamId;
 
     /**
+     * The bundle ID for app
+     *
+     * @var string
+     */
+    private $appBundleId;
+
+    /**
      * Token constructor.
      * @param array $configs
      */
@@ -62,13 +76,9 @@ final class Token implements AuthProviderInterface
         $this->teamId = $configs['team_id'];
         $this->privateKeyPath = $configs['private_key_path'];
         $this->privateKeySecret = $configs['private_key_secret'];
+        $this->appBundleId = $configs['app_bundle_id'];
 
         $this->generatePrivateECKey();
-    }
-
-    public function authenticateClient($request)
-    {
-        // TODO: Implement authenticateClient() method.
     }
 
     private function generatePrivateECKey()
@@ -96,14 +106,29 @@ final class Token implements AuthProviderInterface
         ];
     }
 
+    public function authenticateClient($curlHandle)
+    {
+        $headers = [
+            "apns-topic: " . $this->appBundleId,
+            'Authorization: bearer ' . $this->token
+        ];
+
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
+    }
+
     public function generate()
     {
-        $token = JWSFactory::createJWSToCompactJSON(
+        $this->token = JWSFactory::createJWSToCompactJSON(
             $this->getClaimsPayload(),
             $this->privateECKey,
             $this->getProtectedHeader()
         );
 
-        return $token;
+        return $this->token;
+    }
+
+    public function get()
+    {
+        return $this->token;
     }
 }

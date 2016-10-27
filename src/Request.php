@@ -11,7 +11,7 @@
 
 namespace Pushok;
 
-class Request
+final class Request
 {
     const APNS_DEVELOPMENT_SERVER = 'https://api.development.push.apple.com';
     const APNS_PRODUCTION_SERVER = 'https://api.push.apple.com';
@@ -20,6 +20,8 @@ class Request
 
     public function __construct($curlHandle, Message $message, $isProductionEnv)
     {
+        $this->curlHandle = $curlHandle;
+
         if ($isProductionEnv) {
             $url = $this->getProductionUrl($message);
         } else {
@@ -38,14 +40,14 @@ class Request
             CURLOPT_HEADER => 1,
         ));
 
-        $response = curl_exec($curlHandle);
-        if ($response === FALSE) {
-            throw new \Exception("Curl failed: " .  curl_error($curlHandle));
-        }
-        print_r($response);
-
-        // get response
-        $status = curl_getinfo($curlHandle);
+//        $response = curl_exec($curlHandle);
+//        if ($response === FALSE) {
+//            throw new \Exception("Curl failed: " .  curl_error($curlHandle));
+//        }
+//        print_r($response);
+//
+//        // get response
+//        $status = curl_getinfo($curlHandle);
     }
 
     private function getProductionUrl(Message $message)
@@ -61,5 +63,10 @@ class Request
     private function getUrlPath(Message $message)
     {
         return str_replace("{token}", $message->getDeviceToken(), self::APNS_PATH_SCHEMA);
+    }
+
+    public function send()
+    {
+        return curl_exec($this->curlHandle);
     }
 }

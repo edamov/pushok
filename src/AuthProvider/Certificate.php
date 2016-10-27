@@ -15,7 +15,7 @@ use Jose\Factory\JWKFactory;
 use Jose\Factory\JWSFactory;
 use Pushok\AuthProviderInterface;
 
-final class Certificate implements AuthProviderInterface
+class Certificate implements AuthProviderInterface
 {
     /**
      * Path to certificate
@@ -33,7 +33,10 @@ final class Certificate implements AuthProviderInterface
         $this->certificatePath = $certificatePath;
     }
 
-    public function authenticateClient()
+    /**
+     * @param resource $curlHandle
+     */
+    public function authenticateClient($curlHandle)
     {
         // TODO: Implement authenticateClient() method.
     }

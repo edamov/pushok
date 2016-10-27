@@ -11,7 +11,7 @@
 
 namespace Pushok;
 
-class Response
+final class Response
 {
     const APNS_SUCCESS = 200;
     const APNS_BAD_REQUEST = 400;
@@ -82,7 +82,4 @@ class Response
             'Shutdown' => 'The server is shutting down',
         ],
     ];
-
-
-
 }

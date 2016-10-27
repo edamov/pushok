@@ -14,11 +14,6 @@ namespace Pushok;
 class Client
 {
     /**
-     * @var resource
-     */
-    private $connection;
-
-    /**
      * @var Message[]
      */
     private $messages;
@@ -45,12 +40,15 @@ class Client
 
         foreach ($this->messages as $message) {
             $request = new Request($curlHandle, $message, $this->isProductionEnv);
+
             $this->authProvider->authenticateClient($curlHandle);
 
-            yield curl_exec($curlHandle);
+            $response[] = $request->send();
         }
 
         curl_close($curlHandle);
+
+        return $response;
     }
 
     public function addMessage(Message $message)
