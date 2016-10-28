@@ -38,6 +38,7 @@ class Client
     {
         $curlHandle = curl_init();
 
+        $response = [];
         foreach ($this->messages as $message) {
             $request = new Request($curlHandle, $message, $this->isProductionEnv);
 

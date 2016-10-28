@@ -7,10 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-**Note:** This library is in heavily development phase
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+**Note:** This library is under development
 
 ## Install
 
@@ -23,8 +20,28 @@ $ composer require edamov/apush
 ## Usage
 
 ``` php
-$skeleton = new edamov\apush();
-echo $skeleton->echoPhrase('Hello, League!');
+$options = [
+    'key_id' => 'AAAABBBBCC',
+    'team_id' => 'DDDDEEEEFF',
+    'app_bundle_id' => 'com.app.Test',
+    'private_key_path' => __DIR__ . 'private_key.p8',
+    'private_key_secret' => null
+];
+
+$authProvider = new AuthProvider\Token($options);
+
+$payload = new Payload(); // create push notification body
+$payload->setAlert('Hello!');
+
+$deviceTokens = ['111', '222', '333'];
+$messages = [];
+foreach ($deviceTokens as $deviceToken) {
+    $messages[] = new Message($deviceToken, $payload);
+}
+$client = new Client($authProvider, $production = false);
+$client->addMessages($messages);
+
+$response = $client->send();
 ```
 
 ## Change log
@@ -47,7 +64,7 @@ If you discover any security related issues, please email edamov@gmail.com inste
 
 ## Credits
 
-- [Artur Edamov][link-author]
+- [Arthur Edamov][link-author]
 - [All Contributors][link-contributors]
 
 ## License

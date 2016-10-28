@@ -65,18 +65,25 @@ class Token implements AuthProviderInterface
     private $appBundleId;
 
     /**
-     * Token constructor.
-     * @param array $configs
+     * This provider accepts the following options:
+     *
+     * - key_id
+     * - team_id
+     * - private_key_path
+     * - private_key_secret
+     * - app_bundle_id
+     *
+     * @param array $options
      */
-    public function __construct(array $configs)
+    public function __construct(array $options)
     {
         //todo: validate configs
 
-        $this->keyId = $configs['key_id'];
-        $this->teamId = $configs['team_id'];
-        $this->privateKeyPath = $configs['private_key_path'];
-        $this->privateKeySecret = $configs['private_key_secret'];
-        $this->appBundleId = $configs['app_bundle_id'];
+        $this->keyId = $options['key_id'];
+        $this->teamId = $options['team_id'];
+        $this->privateKeyPath = $options['private_key_path'];
+        $this->privateKeySecret = $options['private_key_secret'];
+        $this->appBundleId = $options['app_bundle_id'];
 
         $this->generatePrivateECKey();
     }

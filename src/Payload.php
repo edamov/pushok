@@ -102,6 +102,8 @@ class Payload
 
     public function toJson()
     {
+        //todo: implement this method
+
         return '{"aps":{"alert":"hello!","sound":"default"}}';
     }
 }
