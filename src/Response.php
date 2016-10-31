@@ -115,9 +115,7 @@ final class Response
 
     private static function fetchErrorReason(string $body)
     {
-        $bodyArray = json_decode($body, true);
-
-        return $bodyArray['reason'] ?: '';
+        return json_decode($body, true)['reason'] ?: '';
     }
 
     public function getApnsId()
@@ -132,11 +130,7 @@ final class Response
 
     public function getReasonPhrase()
     {
-        if ($this->statusCode != '' && isset(self::$reasonPhrases[$this->statusCode])) {
-            return self::$reasonPhrases[$this->statusCode];
-        }
-
-        return '';
+        return self::$reasonPhrases[$this->statusCode] ?: '';
     }
 
     public function getErrorReason()
@@ -146,6 +140,6 @@ final class Response
 
     public function getErrorDescription()
     {
-        return self::$errorReasons[$this->errorReason];
+        return self::$errorReasons[$this->statusCode][$this->errorReason] ?: '';
     }
 }

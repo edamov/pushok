@@ -16,7 +16,7 @@ class Client
     /**
      * @var Message[]
      */
-    private $messages;
+    private $messages = [];
 
     /**
      * @var AuthProviderInterface
