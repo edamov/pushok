@@ -34,22 +34,35 @@ class Client
         $this->isProductionEnv = $isProductionEnv;
     }
 
-    public function send()
+    public function push()
     {
         $curlHandle = curl_init();
 
-        $response = [];
+        $responsesCollection = [];
         foreach ($this->messages as $message) {
-            $request = new Request($curlHandle, $message, $this->isProductionEnv);
+            $request = new Request($message, $this->isProductionEnv);
 
             $this->authProvider->authenticateClient($curlHandle);
 
-            $response[] = $request->send();
+            $result = $this->send($curlHandle, $request);
+
+            list($headers, $body) = explode("\r\n\r\n", $result, 2);
+
+            $statusCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+
+            $responsesCollection[] = new Response($statusCode, $headers, $body);
         }
 
         curl_close($curlHandle);
 
-        return $response;
+        return $responsesCollection;
+    }
+
+    private function send($curlHandle, Request $request)
+    {
+        curl_setopt_array($curlHandle, $request->getOptions());
+
+        return curl_exec($curlHandle);
     }
 
     public function addMessage(Message $message)

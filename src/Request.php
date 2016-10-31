@@ -18,17 +18,17 @@ final class Request
     const APNS_PORT = 443;
     const APNS_PATH_SCHEMA = '/3/device/{token}';
 
-    public function __construct($curlHandle, Message $message, $isProductionEnv)
-    {
-        $this->curlHandle = $curlHandle;
+    private $options = [];
 
+    public function __construct(Message $message, $isProductionEnv)
+    {
         if ($isProductionEnv) {
             $url = $this->getProductionUrl($message);
         } else {
             $url = $this->getSandboxUrl($message);
         }
 
-        curl_setopt_array($curlHandle, array(
+        $this->options = [
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2_0,
             CURLOPT_URL => $url,
             CURLOPT_PORT => self::APNS_PORT,
@@ -37,17 +37,13 @@ final class Request
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_HEADER => 1,
-        ));
+            CURLOPT_HEADER => true,
+        ];
+    }
 
-//        $response = curl_exec($curlHandle);
-//        if ($response === FALSE) {
-//            throw new \Exception("Curl failed: " .  curl_error($curlHandle));
-//        }
-//        print_r($response);
-//
-//        // get response
-//        $status = curl_getinfo($curlHandle);
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     private function getProductionUrl(Message $message)
@@ -63,10 +59,5 @@ final class Request
     private function getUrlPath(Message $message)
     {
         return str_replace("{token}", $message->getDeviceToken(), self::APNS_PATH_SCHEMA);
-    }
-
-    public function send()
-    {
-        return curl_exec($this->curlHandle);
     }
 }

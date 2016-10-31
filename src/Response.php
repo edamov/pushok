@@ -23,7 +23,7 @@ final class Response
     const APNS_SERVER_ERROR = 500;
     const APNS_SERVER_UNAVAILABLE = 503;
 
-    public static $statusTexts = [
+    public static $reasonPhrases = [
         200 => 'Success.',
         400 => 'Bad request.',
         403 => 'There was an error with the certificate or with the provider authentication token.',
@@ -82,4 +82,70 @@ final class Response
             'Shutdown' => 'The server is shutting down',
         ],
     ];
+
+    private $apnsId;
+
+    private $statusCode;
+
+    private $errorReason;
+
+    public function __construct(int $statusCode, string $headers, string $body)
+    {
+        $this->statusCode = $statusCode;
+        $this->apnsId = self::fetchApnsId($headers);
+        $this->errorReason = self::fetchErrorReason($body);
+    }
+
+    private static function fetchApnsId(string $headers)
+    {
+        $data = explode("\n", trim($headers));
+
+        foreach ($data as $part) {
+            $middle = explode(":", $part);
+
+            if ($middle[0] !== 'apns-id') {
+                continue;
+            }
+
+            return $middle[1];
+        }
+
+        return '';
+    }
+
+    private static function fetchErrorReason(string $body)
+    {
+        $bodyArray = json_decode($body, true);
+
+        return $bodyArray['reason'] ?: '';
+    }
+
+    public function getApnsId()
+    {
+        return $this->apnsId;
+    }
+
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    public function getReasonPhrase()
+    {
+        if ($this->statusCode != '' && isset(self::$reasonPhrases[$this->statusCode])) {
+            return self::$reasonPhrases[$this->statusCode];
+        }
+
+        return '';
+    }
+
+    public function getErrorReason()
+    {
+        return $this->errorReason;
+    }
+
+    public function getErrorDescription()
+    {
+        return self::$errorReasons[$this->errorReason];
+    }
 }
