@@ -60,11 +60,12 @@ class Alert
 
     public static function createFromArray(array $array)
     {
-
+        //todo: is valid array
     }
 
     public static function createFromJson(string $json)
     {
+        //todo: validate json
 
     }
 

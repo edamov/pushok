@@ -13,52 +13,53 @@ namespace Pushok\AuthProvider;
 
 use Jose\Factory\JWKFactory;
 use Jose\Factory\JWSFactory;
+use Jose\Object\JWKInterface;
 use Pushok\AuthProviderInterface;
 
 class Token implements AuthProviderInterface
 {
+    /**
+     * Hash alghorithm for generating auth token.
+     */
     const HASH_ALGORITHM = 'ES256';
 
     /**
-     * Generated auth token
+     * Generated auth token.
      *
      * @var string
      */
     private $token;
 
     /**
-     * Path to p8 private key
+     * Path to p8 private key.
      *
      * @var string
      */
     private $privateKeyPath;
 
     /**
+     * Private key secret.
+     *
      * @var string|null
      */
     private $privateKeySecret;
 
     /**
-     * @var \Jose\Object\JWKInterface
-     */
-    private $privateECKey;
-
-    /**
-     * The Key ID obtained from Apple developer account
+     * The Key ID obtained from Apple developer account.
      *
      * @var string
      */
     private $keyId;
 
     /**
-     * The Team ID obtained from Apple developer account
+     * The Team ID obtained from Apple developer account.
      *
      * @var string
      */
     private $teamId;
 
     /**
-     * The bundle ID for app
+     * The bundle ID for app obtained from Apple developer account.
      *
      * @var string
      */
@@ -69,9 +70,9 @@ class Token implements AuthProviderInterface
      *
      * - key_id
      * - team_id
+     * - app_bundle_id
      * - private_key_path
      * - private_key_secret
-     * - app_bundle_id
      *
      * @param array $options
      */
@@ -81,23 +82,33 @@ class Token implements AuthProviderInterface
 
         $this->keyId = $options['key_id'];
         $this->teamId = $options['team_id'];
-        $this->privateKeyPath = $options['private_key_path'];
-        $this->privateKeySecret = $options['private_key_secret'];
         $this->appBundleId = $options['app_bundle_id'];
+        $this->privateKeyPath = $options['private_key_path'];
+        $this->privateKeySecret = $options['private_key_secret'] ?: null;
 
-        $this->generatePrivateECKey();
+        $this->token = $this->generate();
     }
 
-    private function generatePrivateECKey()
+    /**
+     * Generate private EC key.
+     *
+     * @return JWKInterface
+     */
+    private function generatePrivateECKey(): JWKInterface
     {
-        $this->privateECKey = JWKFactory::createFromKeyFile($this->privateKeyPath, $this->privateKeySecret, [
+        return JWKFactory::createFromKeyFile($this->privateKeyPath, $this->privateKeySecret, [
             'kid' => $this->keyId,
             'alg' => self::HASH_ALGORITHM,
             'use' => 'sig'
         ]);
     }
 
-    private function getClaimsPayload()
+    /**
+     * Get claims payload.
+     *
+     * @return array
+     */
+    private function getClaimsPayload(): array
     {
         return [
             'iss' => $this->teamId,
@@ -105,14 +116,25 @@ class Token implements AuthProviderInterface
         ];
     }
 
-    private function getProtectedHeader()
+    /**
+     * Get protected header.
+     *
+     * @param JWKInterface $privateECKey
+     * @return array
+     */
+    private function getProtectedHeader(JWKInterface $privateECKey): array
     {
         return [
             'alg' => self::HASH_ALGORITHM,
-            'kid' => $this->privateECKey->get('kid'),
+            'kid' => $privateECKey->get('kid'),
         ];
     }
 
+    /**
+     * Authenticate client.
+     *
+     * @param resource $curlHandle
+     */
     public function authenticateClient($curlHandle)
     {
         $headers = [
@@ -123,19 +145,41 @@ class Token implements AuthProviderInterface
         curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
     }
 
-    public function generate()
+    /**
+     * Generate new token.
+     *
+     * @return string
+     */
+    public function generate(): string
     {
+        $privateECKey = $this->generatePrivateECKey();
+
         $this->token = JWSFactory::createJWSToCompactJSON(
             $this->getClaimsPayload(),
-            $this->privateECKey,
-            $this->getProtectedHeader()
+            $privateECKey,
+            $this->getProtectedHeader($privateECKey)
         );
 
         return $this->token;
     }
 
-    public function get()
+    /**
+     * Get last generated token.
+     *
+     * @return string
+     */
+    public function get(): string
     {
         return $this->token;
+    }
+
+    /**
+     * Set token.
+     *
+     * @param string $token
+     */
+    public function set(string $token)
+    {
+        $this->token = $token;
     }
 }

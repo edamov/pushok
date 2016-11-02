@@ -14,27 +14,47 @@ namespace Pushok;
 class Message
 {
     /**
+     * Message payload
+     *
      * @var Payload
      */
     private $payload;
 
     /**
+     * Token of device
+     *
      * @var string
      */
     private $deviceToken;
 
+    /**
+     * Message constructor.
+     *
+     * @param Payload $payload
+     * @param string $deviceToken
+     */
     public function __construct(Payload $payload, string $deviceToken)
     {
         $this->payload = $payload;
         $this->deviceToken = $deviceToken;
     }
 
-    public function getDeviceToken()
+    /**
+     * Get device token.
+     *
+     * @return string
+     */
+    public function getDeviceToken(): string
     {
         return $this->deviceToken;
     }
 
-    public function getPayload()
+    /**
+     * Get payload.
+     *
+     * @return Payload
+     */
+    public function getPayload(): Payload
     {
         return $this->payload;
     }

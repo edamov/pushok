@@ -36,7 +36,6 @@ final class Request
             CURLOPT_POSTFIELDS => $message->getPayload()->toJson(),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_HEADER => true,
         ];
     }

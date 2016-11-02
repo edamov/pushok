@@ -23,7 +23,12 @@ final class Response
     const APNS_SERVER_ERROR = 500;
     const APNS_SERVER_UNAVAILABLE = 503;
 
-    public static $reasonPhrases = [
+    /**
+     * Reason phrases by status code.
+     *
+     * @var array
+     */
+    private static $reasonPhrases = [
         200 => 'Success.',
         400 => 'Bad request.',
         403 => 'There was an error with the certificate or with the provider authentication token.',
@@ -35,7 +40,12 @@ final class Response
         503 => 'The server is shutting down and unavailable.',
     ];
 
-    public static $errorReasons = [
+    /**
+     * Error reasons by status code.
+     *
+     * @var array
+     */
+    private static $errorReasons = [
         400 => [
             'BadCollapseId' => 'The collapse identifier exceeds the maximum allowed size',
             'BadDeviceToken' => 'The specified device token was bad. Verify that the request contains a valid token and that the token matches the environment',
@@ -83,12 +93,34 @@ final class Response
         ],
     ];
 
+    /**
+     * APNs Id.
+     *
+     * @var string
+     */
     private $apnsId;
 
+    /**
+     * Response status code.
+     *
+     * @var int
+     */
     private $statusCode;
 
+    /**
+     * Error reason.
+     *
+     * @var string
+     */
     private $errorReason;
 
+    /**
+     * Response constructor.
+     *
+     * @param int $statusCode
+     * @param string $headers
+     * @param string $body
+     */
     public function __construct(int $statusCode, string $headers, string $body)
     {
         $this->statusCode = $statusCode;
@@ -96,7 +128,13 @@ final class Response
         $this->errorReason = self::fetchErrorReason($body);
     }
 
-    private static function fetchApnsId(string $headers)
+    /**
+     * Fetch APNs Id from response headers.
+     *
+     * @param string $headers
+     * @return string
+     */
+    private static function fetchApnsId(string $headers): string
     {
         $data = explode("\n", trim($headers));
 
@@ -113,32 +151,63 @@ final class Response
         return '';
     }
 
-    private static function fetchErrorReason(string $body)
+    /**
+     * Fetch error reason from response body.
+     *
+     * @param string $body
+     * @return string
+     */
+    private static function fetchErrorReason(string $body): string
     {
         return json_decode($body, true)['reason'] ?: '';
     }
 
-    public function getApnsId()
+    /**
+     * Get APNs Id
+     *
+     * @return string
+     */
+    public function getApnsId(): string
     {
         return $this->apnsId;
     }
 
-    public function getStatusCode()
+    /**
+     * Get status code.
+     *
+     * @return int
+     */
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    public function getReasonPhrase()
+    /**
+     * Get reason phrase.
+     *
+     * @return string
+     */
+    public function getReasonPhrase(): string
     {
         return self::$reasonPhrases[$this->statusCode] ?: '';
     }
 
-    public function getErrorReason()
+    /**
+     * Get error reason.
+     *
+     * @return string
+     */
+    public function getErrorReason(): string
     {
         return $this->errorReason;
     }
 
-    public function getErrorDescription()
+    /**
+     * Get error description.
+     *
+     * @return string
+     */
+    public function getErrorDescription(): string
     {
         return self::$errorReasons[$this->statusCode][$this->errorReason] ?: '';
     }

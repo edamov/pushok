@@ -14,27 +14,44 @@ namespace Pushok;
 class Client
 {
     /**
+     * Array of messages.
+     *
      * @var Message[]
      */
     private $messages = [];
 
     /**
+     * Authentication provider.
+     *
      * @var AuthProviderInterface
      */
     private $authProvider;
 
     /**
+     * Production or sandbox environment.
+     *
      * @var bool
      */
     private $isProductionEnv;
 
+    /**
+     * Client constructor.
+     *
+     * @param AuthProviderInterface $authProvider
+     * @param bool $isProductionEnv
+     */
     public function __construct(AuthProviderInterface $authProvider, bool $isProductionEnv = false)
     {
         $this->authProvider = $authProvider;
         $this->isProductionEnv = $isProductionEnv;
     }
 
-    public function push()
+    /**
+     * Push messages to APNs
+     *
+     * @return array
+     */
+    public function push(): array
     {
         $curlHandle = curl_init();
 
@@ -58,6 +75,14 @@ class Client
         return $responsesCollection;
     }
 
+    /**
+     * Send request.
+     *
+     * @param $curlHandle
+     * @param Request $request
+     *
+     * @return mixed Return the result on success, false on failure
+     */
     private function send($curlHandle, Request $request)
     {
         curl_setopt_array($curlHandle, $request->getOptions());
@@ -65,12 +90,22 @@ class Client
         return curl_exec($curlHandle);
     }
 
+    /**
+     * Add message in queue for sending.
+     *
+     * @param Message $message
+     */
     public function addMessage(Message $message)
     {
         $this->messages[] = $message;
     }
 
-    public function addMessages($messages)
+    /**
+     * Add several messages in queue for sending.
+     *
+     * @param array $messages
+     */
+    public function addMessages(array $messages)
     {
         $this->messages = array_merge($this->messages, $messages);
     }

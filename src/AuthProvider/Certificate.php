@@ -11,33 +11,47 @@
 
 namespace Pushok\AuthProvider;
 
-use Jose\Factory\JWKFactory;
-use Jose\Factory\JWSFactory;
 use Pushok\AuthProviderInterface;
 
 class Certificate implements AuthProviderInterface
 {
     /**
-     * Path to certificate
+     * Path to certificate.
      *
      * @var string
      */
     private $certificatePath;
 
     /**
-     * Certificate constructor.
-     * @param string $certificatePath
+     * Certificate secret.
+     *
+     * @var string
      */
-    public function __construct(string $certificatePath)
+    private $certificateSecret;
+
+    /**
+     * Certificate constructor.
+     *
+     * @param string $certificatePath
+     * @param string|null $certificateSecret
+     */
+    public function __construct(string $certificatePath, string $certificateSecret = null)
     {
         $this->certificatePath = $certificatePath;
+        $this->certificateSecret = $certificateSecret;
     }
 
     /**
+     * Authenticate client
+     *
      * @param resource $curlHandle
      */
     public function authenticateClient($curlHandle)
     {
-        // TODO: Implement authenticateClient() method.
+        curl_setopt_array($curlHandle, [
+            CURLOPT_SSLCERT => $this->certificatePath,
+            CURLOPT_SSLCERTPASSWD => $this->certificateSecret,
+            CURLOPT_SSL_VERIFYPEER => true
+        ]);
     }
 }
