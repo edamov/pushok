@@ -28,10 +28,10 @@ $options = [
     'private_key_secret' => null
 ];
 
-$authProvider = new AuthProvider\Token($options);
+$authProvider = AuthProvider\Token::create($options);
 
-$payload = new Payload(); // create push notification body
-$payload->setAlert('Hello!');
+$alert = Alert::create()->setTitle('Hello!');
+$payload = Payload::create()->setAlert($alert);
 
 $deviceTokens = ['111', '222', '333'];
 $messages = [];
@@ -41,7 +41,7 @@ foreach ($deviceTokens as $deviceToken) {
 $client = new Client($authProvider, $production = false);
 $client->addMessages($messages);
 
-$response = $client->send();
+$response = $client->push();
 ```
 
 ## Change log
