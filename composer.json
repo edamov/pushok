@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.0.7",
         "spomky-labs/jose": "^6.1.1"
     },
     "require-dev": {
@@ -36,7 +36,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.x-dev"
+            "dev-master": "0.1.x-dev"
         }
     },
     "minimum-stability": "dev",
