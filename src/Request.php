@@ -11,7 +11,13 @@
 
 namespace Pushok;
 
-final class Request
+/**
+ * Class Request
+ * @package Pushok
+ *
+ * @see http://bit.ly/communicating-with-apns
+ */
+class Request
 {
     const APNS_DEVELOPMENT_SERVER = 'https://api.development.push.apple.com';
     const APNS_PRODUCTION_SERVER = 'https://api.push.apple.com';

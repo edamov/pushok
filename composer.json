@@ -1,12 +1,12 @@
 {
-    "name": "edamov/apush",
+    "name": "edamov/pushok",
     "type": "library",
-    "description": "",
+    "description": "PHP client for Apple Push Notification Service (APNs) - Send push notifications to iOS using the new APNs HTTP/2 protocol with token-based (JWT) or certificate-based authentication",
     "keywords": [
-        "edamov",
-        "apush"
+        "apns",
+        "push notifications"
     ],
-    "homepage": "https://github.com/edamov/apush",
+    "homepage": "https://github.com/edamov/pushok",
     "license": "MIT",
     "authors": [
         {
@@ -31,18 +31,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "edamov\\apush\\": "tests"
+            "edamov\\pushok\\": "tests"
         }
     },
+    "minimum-stability": "dev",
     "scripts": {
         "test": "phpunit",
         "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
         "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
     },
     "config": {
         "sort-packages": true

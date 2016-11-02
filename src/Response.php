@@ -11,7 +11,13 @@
 
 namespace Pushok;
 
-final class Response
+/**
+ * Class Response
+ * @package Pushok
+ *
+ * @see http://bit.ly/communicating-with-apns
+ */
+class Response
 {
     const APNS_SUCCESS = 200;
     const APNS_BAD_REQUEST = 400;

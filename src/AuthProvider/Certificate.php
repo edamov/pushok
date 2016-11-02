@@ -13,7 +13,13 @@ namespace Pushok\AuthProvider;
 
 use Pushok\AuthProviderInterface;
 
-class Certificate implements AuthProviderInterface
+/**
+ * Class Certificate
+ * @package Pushok\AuthProvider
+ *
+ * @see http://bit.ly/communicating-with-apns
+ */
+final class Certificate implements AuthProviderInterface
 {
     /**
      * Path to certificate.
@@ -29,20 +35,25 @@ class Certificate implements AuthProviderInterface
      */
     private $certificateSecret;
 
+    private function __construct() {}
+
     /**
-     * Certificate constructor.
+     * Create Certificate Auth provider.
      *
-     * @param string $certificatePath
-     * @param string|null $certificateSecret
+     * @param array $options
+     * @return Certificate
      */
-    public function __construct(string $certificatePath, string $certificateSecret = null)
+    public static function create(array $options): Certificate
     {
-        $this->certificatePath = $certificatePath;
-        $this->certificateSecret = $certificateSecret;
+        $certificate = new self();
+        $certificate->certificatePath = $options['certificatePath'];
+        $certificate->certificateSecret = $options['certificateSecret'];
+
+        return $certificate;
     }
 
     /**
-     * Authenticate client
+     * Authenticate client.
      *
      * @param resource $curlHandle
      */

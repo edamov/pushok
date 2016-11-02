@@ -16,7 +16,13 @@ use Jose\Factory\JWSFactory;
 use Jose\Object\JWKInterface;
 use Pushok\AuthProviderInterface;
 
-class Token implements AuthProviderInterface
+/**
+ * Class Token
+ * @package Pushok\AuthProvider
+ *
+ * @see http://bit.ly/communicating-with-apns
+ */
+final class Token implements AuthProviderInterface
 {
     /**
      * Hash alghorithm for generating auth token.
@@ -76,17 +82,67 @@ class Token implements AuthProviderInterface
      *
      * @param array $options
      */
-    public function __construct(array $options)
+    private function __construct(array $options)
     {
-        //todo: validate configs
-
         $this->keyId = $options['key_id'];
         $this->teamId = $options['team_id'];
         $this->appBundleId = $options['app_bundle_id'];
         $this->privateKeyPath = $options['private_key_path'];
         $this->privateKeySecret = $options['private_key_secret'] ?: null;
+    }
 
-        $this->token = $this->generate();
+    /**
+     * Create Token Auth Provider.
+     *
+     * @param array $options
+     * @return Token
+     */
+    public static function create(array $options): Token
+    {
+        $token = new self($options);
+        $token->token = $token->generate();
+
+        return $token;
+    }
+
+    /**
+     * Use previously generated token.
+     *
+     * @param string $tokenString
+     * @param array $options
+     * @return Token
+     */
+    public static function useExisting(string $tokenString, array $options): Token
+    {
+        $token = new self($options);
+        $token->token = $tokenString;
+
+        return $token;
+    }
+
+    /**
+     * Authenticate client.
+     *
+     * @param resource $curlHandle
+     */
+    public function authenticateClient($curlHandle)
+    {
+        $headers = [
+            "apns-topic: " . $this->appBundleId,
+            'Authorization: bearer ' . $this->token
+        ];
+
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
+    }
+
+    /**
+     * Get last generated token.
+     *
+     * @return string
+     */
+    public function get(): string
+    {
+        return $this->token;
     }
 
     /**
@@ -131,26 +187,11 @@ class Token implements AuthProviderInterface
     }
 
     /**
-     * Authenticate client.
-     *
-     * @param resource $curlHandle
-     */
-    public function authenticateClient($curlHandle)
-    {
-        $headers = [
-            "apns-topic: " . $this->appBundleId,
-            'Authorization: bearer ' . $this->token
-        ];
-
-        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
-    }
-
-    /**
      * Generate new token.
      *
      * @return string
      */
-    public function generate(): string
+    private function generate(): string
     {
         $privateECKey = $this->generatePrivateECKey();
 
@@ -161,25 +202,5 @@ class Token implements AuthProviderInterface
         );
 
         return $this->token;
-    }
-
-    /**
-     * Get last generated token.
-     *
-     * @return string
-     */
-    public function get(): string
-    {
-        return $this->token;
-    }
-
-    /**
-     * Set token.
-     *
-     * @param string $token
-     */
-    public function set(string $token)
-    {
-        $this->token = $token;
     }
 }

@@ -12,16 +12,13 @@
 namespace Pushok;
 
 /**
- * Interface AuthProviderInterface
+ * Class InvalidPayloadException
  * @package Pushok
  */
-interface AuthProviderInterface
+class InvalidPayloadException extends \Exception
 {
-    /**
-     * Authenticate client
-     *
-     * @param $curlHandle resource a cURL handle
-     * @return void
-     */
-    public function authenticateClient($curlHandle);
+    public static function reservedKey()
+    {
+        return new static("Key " . Payload::PAYLOAD_ROOT_KEY . " is reserved and can't be used for custom property.");
+    }
 }

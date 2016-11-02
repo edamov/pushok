@@ -11,6 +11,10 @@
 
 namespace Pushok;
 
+/**
+ * Class Client
+ * @package Pushok
+ */
 class Client
 {
     /**
@@ -47,7 +51,7 @@ class Client
     }
 
     /**
-     * Push messages to APNs
+     * Push messages to APNs.
      *
      * @return array
      */
@@ -55,7 +59,7 @@ class Client
     {
         $curlHandle = curl_init();
 
-        $responsesCollection = [];
+        $responseCollection = [];
         foreach ($this->messages as $message) {
             $request = new Request($message, $this->isProductionEnv);
 
@@ -67,12 +71,12 @@ class Client
 
             $statusCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 
-            $responsesCollection[] = new Response($statusCode, $headers, $body);
+            $responseCollection[] = new Response($statusCode, $headers, $body);
         }
 
         curl_close($curlHandle);
 
-        return $responsesCollection;
+        return $responseCollection;
     }
 
     /**

@@ -11,17 +11,17 @@
 
 namespace Pushok;
 
-class Message
+final class Message
 {
     /**
-     * Message payload
+     * Message payload.
      *
      * @var Payload
      */
     private $payload;
 
     /**
-     * Token of device
+     * Token of device.
      *
      * @var string
      */
