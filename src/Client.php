@@ -107,7 +107,7 @@ class Client
     /**
      * Add several messages in queue for sending.
      *
-     * @param array $messages
+     * @param Message[] $messages
      */
     public function addMessages(array $messages)
     {

@@ -109,7 +109,7 @@ class Payload
     /**
      * Set badge.
      *
-     * @param int $value
+     * @param integer $value
      * @return Payload
      */
     public function setBadge(integer $value): Payload
