@@ -35,7 +35,9 @@ final class Certificate implements AuthProviderInterface
      */
     private $certificateSecret;
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Create Certificate Auth provider.
