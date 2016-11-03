@@ -44,7 +44,7 @@ class Payload
      * The number to display as the badge of the app icon.
      * If this property is absent, the badge is not changed.
      *
-     * @var integer
+     * @var int
      */
     private $badge;
 
@@ -121,10 +121,10 @@ class Payload
     /**
      * Set badge.
      *
-     * @param integer $value
+     * @param int $value
      * @return Payload
      */
-    public function setBadge(integer $value): Payload
+    public function setBadge(int $value): Payload
     {
         $this->badge = $value;
 
