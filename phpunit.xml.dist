@@ -10,7 +10,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="edamov Test Suite">
+        <testsuite name="Pushok Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

@@ -109,6 +109,16 @@ class Payload
     }
 
     /**
+     * Get Alert.
+     *
+     * @return Alert|null
+     */
+    public function getAlert()
+    {
+        return $this->alert;
+    }
+
+    /**
      * Set badge.
      *
      * @param integer $value
@@ -122,6 +132,16 @@ class Payload
     }
 
     /**
+     * Get badge.
+     *
+     * @return int|null
+     */
+    public function getBadge()
+    {
+        return $this->badge;
+    }
+
+    /**
      * Set sound.
      *
      * @param string $value
@@ -132,6 +152,16 @@ class Payload
         $this->sound = $value;
 
         return $this;
+    }
+
+    /**
+     * Get sound.
+     *
+     * @return string|null
+     */
+    public function getSound()
+    {
+        return $this->sound;
     }
 
     /**
