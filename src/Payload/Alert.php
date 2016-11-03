@@ -20,6 +20,16 @@ namespace Pushok\Payload;
  */
 class Alert
 {
+    const ALERT_TITLE_KEY = 'title';
+    const ALERT_BODY_KEY = 'body';
+    const ALERT_TITLE_LOC_KEY = 'title-loc-key';
+    const ALERT_TITLE_LOC_ARGS_KEY = 'title-loc-args';
+    const ALERT_ACTION_LOC_KEY = 'action-loc-key';
+    const ALERT_LOC_KEY = 'loc-key';
+    const ALERT_LOC_ARGS_KEY = 'loc-args';
+    const ALERT_LAUNCH_IMAGE_KEY = 'launch-image';
+    const ALERT_MUTABLE_CONTENT_KEY = 'mutable-content';
+
     /**
      * A short string describing the purpose of the notification.
      *
@@ -208,5 +218,53 @@ class Alert
         $this->mutableContent = $value;
 
         return $this;
+    }
+
+    /**
+     * Transform Alert object to array.
+     *
+     * @return array
+     */
+    public function transform(): array
+    {
+        $alert= [];
+
+        if (is_string($this->title)) {
+            $alert[self::ALERT_TITLE_KEY] = $this->title;
+        }
+
+        if (is_string($this->body)) {
+            $alert[self::ALERT_BODY_KEY] = $this->body;
+        }
+
+        if (is_string($this->titleLocKey)) {
+            $alert[self::ALERT_TITLE_LOC_KEY] = $this->titleLocKey;
+        }
+
+        if (is_array($this->titleLocArgs)) {
+            $alert[self::ALERT_TITLE_LOC_ARGS_KEY] = $this->titleLocArgs;
+        }
+
+        if (is_string($this->actionLocKey)) {
+            $alert[self::ALERT_ACTION_LOC_KEY] = $this->actionLocKey;
+        }
+
+        if (is_string($this->locKey)) {
+            $alert[self::ALERT_LOC_KEY] = $this->locKey;
+        }
+
+        if (is_array($this->locArgs)) {
+            $alert[self::ALERT_LOC_ARGS_KEY] = $this->locArgs;
+        }
+
+        if (is_string($this->launchImage)) {
+            $alert[self::ALERT_LAUNCH_IMAGE_KEY] = $this->launchImage;
+        }
+
+        if (is_bool($this->mutableContent)) {
+            $alert[self::ALERT_MUTABLE_CONTENT_KEY] = $this->mutableContent;
+        }
+
+        return $alert;
     }
 }

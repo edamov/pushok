@@ -59,7 +59,10 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
 
     public function testConvertToJSon()
     {
+        $alert = Alert::create()->setTitle('title');
+
         $payload = Payload::create()
+            ->setAlert($alert)
             ->setBadge(1)
             ->setSound('sound')
             ->setCategory('category')
@@ -68,7 +71,8 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
             ->setCustomValue('key', 'value');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"aps": {"badge": 1, "sound": "sound", "category": "category", "thread-id": "tread-id", "content-available": true}, "key": "value"}',
+            '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": "sound", "category": "category", ' .
+            ' "thread-id": "tread-id", "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );
     }

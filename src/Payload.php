@@ -290,7 +290,7 @@ class Payload
         $payload = self::getDefaultPayloadStructure();
 
         if ($this->alert instanceof Alert) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert;
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert->transform();
         }
 
         if (is_int($this->badge)) {
