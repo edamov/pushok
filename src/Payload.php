@@ -170,7 +170,7 @@ class Payload
      * @param bool $value
      * @return Payload
      */
-    public function setContentAvailable(bool $value): Payload
+    public function setContentAvailability(bool $value): Payload
     {
         $this->contentAvailable = $value;
 

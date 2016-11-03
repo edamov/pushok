@@ -36,9 +36,16 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('categoryString', $payload->getCategory());
     }
 
+    public function testSetThreadId()
+    {
+        $payload = Payload::create()->setThreadId('thread-id');
+
+        $this->assertEquals('thread-id', $payload->getThreadId());
+    }
+
     public function testSetContentAvailability()
     {
-        $payload = Payload::create()->setContentAvailable(true);
+        $payload = Payload::create()->setContentAvailability(true);
 
         $this->assertTrue($payload->isContentAvailable());
     }
@@ -56,10 +63,12 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
             ->setBadge(1)
             ->setSound('sound')
             ->setCategory('category')
+            ->setThreadId('tread-id')
+            ->setContentAvailability(true)
             ->setCustomValue('key', 'value');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"aps": {"badge": 1, "sound": "sound", "category": "category"}, "key": "value"}',
+            '{"aps": {"badge": 1, "sound": "sound", "category": "category", "thread-id": "tread-id", "content-available": true}, "key": "value"}',
             $payload->toJson()
         );
     }
