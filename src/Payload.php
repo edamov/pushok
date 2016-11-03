@@ -96,7 +96,7 @@ class Payload
     }
 
     /**
-     * Set alert.
+     * Set Alert.
      *
      * @param Alert $alert
      * @return Payload
@@ -170,11 +170,21 @@ class Payload
      * @param bool $value
      * @return Payload
      */
-    public function isContentAvailable(bool $value): Payload
+    public function setContentAvailable(bool $value): Payload
     {
         $this->contentAvailable = $value;
 
         return $this;
+    }
+
+    /**
+     * Get content availability.
+     *
+     * @return bool|null
+     */
+    public function isContentAvailable()
+    {
+        return $this->contentAvailable;
     }
 
     /**
@@ -185,9 +195,19 @@ class Payload
      */
     public function setCategory(string $value): Payload
     {
-        $this->threadId = $value;
+        $this->category = $value;
 
         return $this;
+    }
+
+    /**
+     * Get category.
+     *
+     * @return string|null
+     */
+    public function getCategory()
+    {
+        return $this->category;
     }
 
     /**
@@ -204,10 +224,20 @@ class Payload
     }
 
     /**
+     * Get thread-id.
+     *
+     * @return string|null
+     */
+    public function getThreadId()
+    {
+        return $this->threadId;
+    }
+
+    /**
      * Set custom value for Payload.
      *
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @return Payload
      * @throws InvalidPayloadException
      */
@@ -223,6 +253,22 @@ class Payload
     }
 
     /**
+     * Get custom value.
+     *
+     * @param $key
+     * @return mixed
+     * @throws InvalidPayloadException
+     */
+    public function getCustomValue($key)
+    {
+        if (!array_key_exists($key, $this->customValues)) {
+            throw InvalidPayloadException::notExistingCustomValue($key);
+        }
+
+        return $this->customValues[$key];
+    }
+
+    /**
      * Convert Payload to JSON.
      *
      * @return string
@@ -231,7 +277,7 @@ class Payload
     {
         $payload = $this->transform();
 
-        return json_encode($payload);
+        return json_encode($payload, defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0);
     }
 
     /**
@@ -241,19 +287,41 @@ class Payload
      */
     private function transform(): array
     {
-        $payload = [
-            self::PAYLOAD_ROOT_KEY => [
-                self::PAYLOAD_ALERT_KEY => $this->alert,
-                self::PAYLOAD_BADGE_KEY => $this->badge,
-                self::PAYLOAD_SOUND_KEY => $this->sound,
-                self::PAYLOAD_CONTENT_AVAILABLE_KEY => $this->contentAvailable,
-                self::PAYLOAD_CATEGORY_KEY => $this->category,
-                self::PAYLOAD_THREAD_ID_KEY => $this->threadId,
-            ]
-        ];
+        $payload = self::getDefaultPayloadStructure();
 
-        $payload = array_merge($payload, $this->customValues);
+        if ($this->alert instanceof Alert) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert;
+        }
+
+        if (is_int($this->badge)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_BADGE_KEY] = $this->badge;
+        }
+
+        if (is_string($this->sound)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_SOUND_KEY] = $this->sound;
+        }
+
+        if (is_bool($this->contentAvailable)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_CONTENT_AVAILABLE_KEY] = (int)$this->contentAvailable;
+        }
+
+        if (is_string($this->category)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_CATEGORY_KEY] = $this->category;
+        }
+
+        if (is_string($this->threadId)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_THREAD_ID_KEY] = $this->threadId;
+        }
+
+        if (count($this->customValues)) {
+            $payload = array_merge($payload, $this->customValues);
+        }
 
         return $payload;
+    }
+
+    private static function getDefaultPayloadStructure()
+    {
+        return [self::PAYLOAD_ROOT_KEY => []];
     }
 }

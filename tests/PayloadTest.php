@@ -19,13 +19,48 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
     {
         $payload = Payload::create()->setBadge(3);
 
-        $this->assertSame(3, $payload->getBadge());
+        $this->assertEquals(3, $payload->getBadge());
     }
 
     public function testSetSound()
     {
         $payload = Payload::create()->setSound('soundString');
 
-        $this->assertSame('soundString', $payload->getSound());
+        $this->assertEquals('soundString', $payload->getSound());
+    }
+
+    public function testSetCategory()
+    {
+        $payload = Payload::create()->setCategory('categoryString');
+
+        $this->assertEquals('categoryString', $payload->getCategory());
+    }
+
+    public function testSetContentAvailability()
+    {
+        $payload = Payload::create()->setContentAvailable(true);
+
+        $this->assertTrue($payload->isContentAvailable());
+    }
+
+    public function testSetCustomValue()
+    {
+        $payload = Payload::create()->setCustomValue('key', 'value');
+
+        $this->assertEquals('value', $payload->getCustomValue('key'));
+    }
+
+    public function testConvertToJSon()
+    {
+        $payload = Payload::create()
+            ->setBadge(1)
+            ->setSound('sound')
+            ->setCategory('category')
+            ->setCustomValue('key', 'value');
+
+        $this->assertJsonStringEqualsJsonString(
+            '{"aps": {"badge": 1, "sound": "sound", "category": "category"}, "key": "value"}',
+            $payload->toJson()
+        );
     }
 }
