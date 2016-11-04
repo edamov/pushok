@@ -35,7 +35,7 @@ class Request
         }
 
         $this->options = [
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2_0,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2,
             CURLOPT_URL => $url,
             CURLOPT_PORT => self::APNS_PORT,
             CURLOPT_POST => true,
