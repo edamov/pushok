@@ -19,7 +19,7 @@ use Pushok\Payload\Alert;
  *
  * @see http://bit.ly/payload-key-reference
  */
-class Payload
+class Payload implements \JsonSerializable
 {
     const PAYLOAD_ROOT_KEY = 'aps';
     const PAYLOAD_ALERT_KEY = 'alert';
@@ -275,22 +275,21 @@ class Payload
      */
     public function toJson(): string
     {
-        $payload = $this->transform();
-
-        return json_encode($payload, defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0);
+        return json_encode($this, JSON_UNESCAPED_UNICODE);
     }
 
     /**
-     * Transform Payload object to array.
+     * Specify data which should be serialized to JSON.
      *
      * @return array
+     * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    private function transform(): array
+    public function jsonSerialize()
     {
         $payload = self::getDefaultPayloadStructure();
 
         if ($this->alert instanceof Alert) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert->transform();
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert;
         }
 
         if (is_int($this->badge)) {

@@ -18,7 +18,7 @@ namespace Pushok\Payload;
  *
  * @see http://bit.ly/payload-key-reference
  */
-class Alert
+class Alert implements \JsonSerializable
 {
     const ALERT_TITLE_KEY = 'title';
     const ALERT_BODY_KEY = 'body';
@@ -311,11 +311,22 @@ class Alert
     }
 
     /**
-     * Transform Alert object to array.
+     * Convert Alert to JSON.
+     *
+     * @return string
+     */
+    public function toJson(): string
+    {
+        return json_encode($this, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Specify data which should be serialized to JSON.
      *
      * @return array
+     * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    public function transform(): array
+    public function jsonSerialize()
     {
         $alert = [];
 

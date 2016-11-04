@@ -1,10 +1,20 @@
 <?php
 
+/*
+ * This file is part of the Pushok package.
+ *
+ * (c) Arthur Edamov <edamov@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Pushok\Tests\Payload;
 
+use PHPUnit\Framework\TestCase;
 use Pushok\Payload\Alert;
 
-class AlertTest extends \PHPUnit_Framework_TestCase
+class AlertTest extends TestCase
 {
     public function testSetTitle()
     {
@@ -41,21 +51,21 @@ class AlertTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('action-loc-key', $alert->getActionLocKey());
     }
 
-    public function testLocKey()
+    public function testSetLocKey()
     {
         $alert = Alert::create()->setLocKey('loc-key');
 
         $this->assertEquals('loc-key', $alert->getLocKey());
     }
 
-    public function testLocArgs()
+    public function testSetLocArgs()
     {
         $alert = Alert::create()->setLocArgs(['loc-arg1', 'loc-arg2']);
 
         $this->assertEquals(['loc-arg1', 'loc-arg2'], $alert->getLocArgs());
     }
 
-    public function testLaunchImage()
+    public function testSetLaunchImage()
     {
         $alert = Alert::create()->setLaunchImage('launch-image');
 
@@ -69,7 +79,7 @@ class AlertTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $alert->hasMutableContent());
     }
 
-    public function testAlertTransformer()
+    public function testAlertConvertingToJson()
     {
         $alert = Alert::create()
             ->setTitle('title')
@@ -82,16 +92,11 @@ class AlertTest extends \PHPUnit_Framework_TestCase
             ->setLaunchImage('launch-image')
             ->setMutableContent(true);
 
-        $this->assertEquals([
-            'title' => 'title',
-            'body' => 'body',
-            'title-loc-key' => 'title-loc-key',
-            'title-loc-args' => ['title-loc-arg'],
-            'action-loc-key' => 'action-loc-key',
-            'loc-key' => 'loc-key',
-            'loc-args' => ['loc-arg'],
-            'launch-image' => 'launch-image',
-            'mutable-content' => 1,
-        ], $alert->transform());
+        $this->assertJsonStringEqualsJsonString(
+            '{"title":"title","body":"body","title-loc-key":"title-loc-key","title-loc-args":["title-loc-arg"],' .
+            '"action-loc-key":"action-loc-key","loc-key":"loc-key","loc-args":["loc-arg"],' .
+            '"launch-image":"launch-image","mutable-content":1}',
+            $alert->toJson()
+        );
     }
 }
