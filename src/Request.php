@@ -35,7 +35,7 @@ class Request
         }
 
         if (!defined('CURL_HTTP_VERSION_2')) {
-            define(CURL_HTTP_VERSION_2, 3);
+            define('CURL_HTTP_VERSION_2', 3);
         }
 
         $this->options = [
