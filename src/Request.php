@@ -34,7 +34,7 @@ class Request
             $url = $this->getSandboxUrl($message);
         }
 
-        if (!defined(CURL_HTTP_VERSION_2)) {
+        if (!defined('CURL_HTTP_VERSION_2')) {
             define(CURL_HTTP_VERSION_2, 3);
         }
 
