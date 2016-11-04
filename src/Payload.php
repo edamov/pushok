@@ -83,7 +83,7 @@ class Payload
      */
     private $customValues;
 
-    protected function __constructor()
+    protected function __construct()
     {
     }
 

@@ -16,7 +16,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPayload()
     {
-        $payload = new Payload();
+        $payload = Payload::create();
 
         $message = new Message($payload, 'deviceTokenString');
 

@@ -93,7 +93,7 @@ class Alert
      */
     private $mutableContent;
 
-    protected function __constructor()
+    protected function __construct()
     {
     }
 
@@ -103,7 +103,7 @@ class Alert
     }
 
     /**
-     * Set Alert title
+     * Set Alert title.
      *
      * @param string $value
      * @return $this
@@ -116,7 +116,17 @@ class Alert
     }
 
     /**
-     * Set Alert body
+     * Get Alert title.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set Alert body.
      *
      * @param string $value
      * @return $this
@@ -129,7 +139,17 @@ class Alert
     }
 
     /**
-     * Set title-loc-key
+     * Get Alert body.
+     *
+     * @return string
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * Set title-loc-key.
      *
      * @param string|null $value
      * @return $this
@@ -142,7 +162,17 @@ class Alert
     }
 
     /**
-     * Set title-loc-args
+     * Get title-loc-key.
+     *
+     * @return string
+     */
+    public function getTitleLocKey()
+    {
+        return $this->titleLocKey;
+    }
+
+    /**
+     * Set title-loc-args.
      *
      * @param array|null $value
      * @return $this
@@ -155,7 +185,17 @@ class Alert
     }
 
     /**
-     * Set action-loc-key
+     * Get title-loc-args.
+     *
+     * @return string[]|null
+     */
+    public function getTitleLocArgs()
+    {
+        return $this->titleLocArgs;
+    }
+
+    /**
+     * Set action-loc-key.
      *
      * @param string|null $value
      * @return $this
@@ -168,7 +208,17 @@ class Alert
     }
 
     /**
-     * Set loc-key
+     * Get action-loc-key.
+     *
+     * @return string|null
+     */
+    public function getActionLocKey()
+    {
+        return $this->actionLocKey;
+    }
+
+    /**
+     * Set loc-key.
      *
      * @param string $value
      * @return $this
@@ -181,7 +231,17 @@ class Alert
     }
 
     /**
-     * Set loc-args
+     * Get loc-key.
+     *
+     * @return string
+     */
+    public function getLocKey()
+    {
+        return $this->locKey;
+    }
+
+    /**
+     * Set loc-args.
      *
      * @param array $value
      * @return $this
@@ -194,7 +254,17 @@ class Alert
     }
 
     /**
-     * Set launch-image
+     * Get loc-args.
+     *
+     * @return string[]
+     */
+    public function getLocArgs()
+    {
+        return $this->locArgs;
+    }
+
+    /**
+     * Set launch-image.
      *
      * @param string $value
      * @return $this
@@ -207,17 +277,37 @@ class Alert
     }
 
     /**
-     * Set the mutable-content key for Notification Service Extensions on iOS10
+     * Get launch-image.
+     *
+     * @return string
+     */
+    public function getLaunchImage()
+    {
+        return $this->launchImage;
+    }
+
+    /**
+     * Set the mutable-content key for Notification Service Extensions on iOS10.
      * @see http://bit.ly/mutable-content
      *
      * @param bool $value
      * @return $this
      */
-    public function isContentMutable(bool $value)
+    public function setMutableContent(bool $value)
     {
         $this->mutableContent = $value;
 
         return $this;
+    }
+
+    /**
+     * Is content mutable.
+     *
+     * @return bool|null
+     */
+    public function hasMutableContent()
+    {
+        return $this->mutableContent;
     }
 
     /**
@@ -227,7 +317,7 @@ class Alert
      */
     public function transform(): array
     {
-        $alert= [];
+        $alert = [];
 
         if (is_string($this->title)) {
             $alert[self::ALERT_TITLE_KEY] = $this->title;
@@ -262,7 +352,7 @@ class Alert
         }
 
         if (is_bool($this->mutableContent)) {
-            $alert[self::ALERT_MUTABLE_CONTENT_KEY] = $this->mutableContent;
+            $alert[self::ALERT_MUTABLE_CONTENT_KEY] = (int)$this->mutableContent;
         }
 
         return $alert;

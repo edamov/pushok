@@ -9,7 +9,7 @@ class PayloadTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetAlert()
     {
-        $alert = new Alert();
+        $alert = Alert::create();
         $payload = Payload::create()->setAlert($alert);
 
         $this->assertSame($alert, $payload->getAlert());
