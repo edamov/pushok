@@ -19,7 +19,7 @@ use Pushok\AuthProviderInterface;
  *
  * @see http://bit.ly/communicating-with-apns
  */
-final class Certificate implements AuthProviderInterface
+class Certificate implements AuthProviderInterface
 {
     /**
      * Path to certificate.
@@ -48,8 +48,8 @@ final class Certificate implements AuthProviderInterface
     public static function create(array $options): Certificate
     {
         $certificate = new self();
-        $certificate->certificatePath = $options['certificatePath'];
-        $certificate->certificateSecret = $options['certificateSecret'];
+        $certificate->certificatePath = $options['certificate_path'];
+        $certificate->certificateSecret = $options['certificate_secret'];
 
         return $certificate;
     }

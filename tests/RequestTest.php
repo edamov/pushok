@@ -18,7 +18,7 @@ use Pushok\Request;
 
 class RequestTest extends TestCase
 {
-    public function testGetStatusCode()
+    public function testOptionsForProductionRequest()
     {
         $payload = Payload::create();
         $message = new Message($payload, '123');
@@ -27,6 +27,24 @@ class RequestTest extends TestCase
         $this->assertEquals([
             84 => 3,
             10002 => 'https://api.push.apple.com/3/device/123',
+            3 => 443,
+            47 => 1,
+            10015 => '{"aps":[]}',
+            19913 => 1,
+            13 => 30,
+            42 => 1
+        ], $request->getOptions());
+    }
+
+    public function testOptionsForSandboxRequest()
+    {
+        $payload = Payload::create();
+        $message = new Message($payload, '123');
+        $request = new Request($message, false);
+
+        $this->assertEquals([
+            84 => 3,
+            10002 => 'https://api.development.push.apple.com/3/device/123',
             3 => 443,
             47 => 1,
             10015 => '{"aps":[]}',

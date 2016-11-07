@@ -113,4 +113,14 @@ class Client
     {
         $this->messages = array_merge($this->messages, $messages);
     }
+
+    /**
+     * Get already added messages.
+     *
+     * @return Message[]
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
 }

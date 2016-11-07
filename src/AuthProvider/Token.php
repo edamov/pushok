@@ -22,7 +22,7 @@ use Pushok\AuthProviderInterface;
  *
  * @see http://bit.ly/communicating-with-apns
  */
-final class Token implements AuthProviderInterface
+class Token implements AuthProviderInterface
 {
     /**
      * Hash alghorithm for generating auth token.

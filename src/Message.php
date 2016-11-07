@@ -11,7 +11,7 @@
 
 namespace Pushok;
 
-final class Message
+class Message
 {
     /**
      * Message payload.
