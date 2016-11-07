@@ -8,7 +8,27 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-**Note:** This library is under development
+> **Note:** This library is under development
+
+Pushok is a simple PHP library for sending push notifications to APNs. 
+
+## Features
+
+- [X] Uses new Apple APNs HTTP/2 connection
+- [X] Supports JWT-based authentication
+- [X] Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
+- [ ] Tested and working in APNs production environment
+- [ ] Supports Certificate-based authentication
+- [ ] Supports persistent connections to APNs
+- [ ] Supports parallel requests to APNs
+- [ ] Supports async requests to APNs
+
+## Requirements
+
+* PHP >= 7.0.7
+* libcurl >= 7.43.0
+* php-curl >= ??
+* php openssl >= ??
 
 ## Install
 
@@ -45,19 +65,11 @@ $client->addMessages($messages);
 $response = $client->push();
 ```
 
-## Change log
-
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
 ## Testing
 
 ``` bash
 $ composer test
 ```
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
 
 ## Security
 
