@@ -1,4 +1,4 @@
-# pushok
+# Pushok
 
 [![PHP 7 ready](http://php7ready.timesplinter.ch/edamov/pushok/master/badge.svg)](https://travis-ci.org/edamov/pushok)
 [![Latest Version on Packagist][ico-version]][link-packagist]
@@ -19,7 +19,6 @@ Pushok is a simple PHP library for sending push notifications to APNs.
 - [X] Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
 - [ ] Tested and working in APNs production environment
 - [ ] Supports Certificate-based authentication
-- [ ] Supports persistent connections to APNs
 - [ ] Supports parallel requests to APNs
 - [ ] Supports async requests to APNs
 
@@ -38,15 +37,15 @@ Via Composer
 $ composer require edamov/pushok
 ```
 
-## Usage
+## Getting Started
 
 ``` php
 $options = [
-    'key_id' => 'AAAABBBBCC',
-    'team_id' => 'DDDDEEEEFF',
-    'app_bundle_id' => 'com.app.Test',
-    'private_key_path' => __DIR__ . 'private_key.p8',
-    'private_key_secret' => null
+    'key_id' => 'AAAABBBBCC', // The Key ID obtained from Apple developer account
+    'team_id' => 'DDDDEEEEFF', // The Team ID obtained from Apple developer account
+    'app_bundle_id' => 'com.app.Test', // The bundle ID for app obtained from Apple developer account
+    'private_key_path' => __DIR__ . 'private_key.p8', // Path to private key
+    'private_key_secret' => null // Private key secret
 ];
 
 $authProvider = AuthProvider\Token::create($options);
@@ -55,14 +54,16 @@ $alert = Alert::create()->setTitle('Hello!');
 $payload = Payload::create()->setAlert($alert);
 
 $deviceTokens = ['111', '222', '333'];
+
 $messages = [];
 foreach ($deviceTokens as $deviceToken) {
     $messages[] = new Message($deviceToken, $payload);
 }
+
 $client = new Client($authProvider, $production = false);
 $client->addMessages($messages);
 
-$response = $client->push();
+$response = $client->push(); // returns an array of Responses (one Response per Message)
 ```
 
 ## Testing
