@@ -10,7 +10,7 @@
 
 > **Note:** This library is under development
 
-Pushok is a simple PHP library for sending push notifications to APNs. 
+Pushok is a simple PHP library for sending push headers to APNs. 
 
 ## Features
 
@@ -54,15 +54,23 @@ $payload = Payload::create()->setAlert($alert);
 
 $deviceTokens = ['111', '222', '333'];
 
-$messages = [];
+$notifications = [];
 foreach ($deviceTokens as $deviceToken) {
-    $messages[] = new Message($deviceToken, $payload);
+    $notifications[] = new Notification($deviceToken, $payload);
 }
 
 $client = new Client($authProvider, $production = false);
-$client->addMessages($messages);
+$client->addNotifications($notifications);
 
-$response = $client->push(); // returns an array of Responses (one Response per Message)
+$responses = $client->push(); // returns an array of Responses (one Response per Notification)
+
+foreach ($responses as $response) {
+    $response->getApnsId();
+    $response->getStatusCode();
+    $response->getReasonPhrase();
+    $response->getErrorReason();
+    $response->getErrorDescription();
+}
 ```
 
 ## Testing

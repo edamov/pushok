@@ -15,6 +15,7 @@ use Jose\Factory\JWKFactory;
 use Jose\Factory\JWSFactory;
 use Jose\Object\JWKInterface;
 use Pushok\AuthProviderInterface;
+use Pushok\Request;
 
 /**
  * Class Token
@@ -123,16 +124,14 @@ class Token implements AuthProviderInterface
     /**
      * Authenticate client.
      *
-     * @param resource $curlHandle
+     * @param Request $request
      */
-    public function authenticateClient($curlHandle)
+    public function authenticateClient(Request $request)
     {
-        $headers = [
+        $request->addHeaders([
             "apns-topic: " . $this->appBundleId,
             'Authorization: bearer ' . $this->token
-        ];
-
-        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
+        ]);
     }
 
     /**

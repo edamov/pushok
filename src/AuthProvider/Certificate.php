@@ -12,6 +12,7 @@
 namespace Pushok\AuthProvider;
 
 use Pushok\AuthProviderInterface;
+use Pushok\Request;
 
 /**
  * Class Certificate
@@ -57,11 +58,11 @@ class Certificate implements AuthProviderInterface
     /**
      * Authenticate client.
      *
-     * @param resource $curlHandle
+     * @param Request $request
      */
-    public function authenticateClient($curlHandle)
+    public function authenticateClient(Request $request)
     {
-        curl_setopt_array($curlHandle, [
+        $request->addOptions([
             CURLOPT_SSLCERT => $this->certificatePath,
             CURLOPT_SSLCERTPASSWD => $this->certificateSecret,
             CURLOPT_SSL_VERIFYPEER => true

@@ -24,15 +24,29 @@ class Request
     const APNS_PORT = 443;
     const APNS_PATH_SCHEMA = '/3/device/{token}';
 
+    const HEADER_APNS_ID = 'apns-id';
+    const HEADER_APNS_EXPIRATION = 'apns-expiration';
+    const HEADER_APNS_PRIORITY = 'apns-priority';
+    const HEADER_APNS_TOPIC = 'apns-topic';
+    const HEADER_APNS_COLLAPSE_ID = 'apns-collapse-id';
+
+    /**
+     * Request headers.
+     *
+     * @var array
+     */
+    private $headers = [];
+
+    /**
+     * Curl options.
+     *
+     * @var array
+     */
     private $options = [];
 
-    public function __construct(Message $message, $isProductionEnv)
+    public function __construct(Notification $notification, $isProductionEnv)
     {
-        if ($isProductionEnv) {
-            $url = $this->getProductionUrl($message);
-        } else {
-            $url = $this->getSandboxUrl($message);
-        }
+        $url = $isProductionEnv ? $this->getProductionUrl($notification) : $this->getSandboxUrl($notification);
 
         if (!defined('CURL_HTTP_VERSION_2')) {
             define('CURL_HTTP_VERSION_2', 3);
@@ -43,11 +57,40 @@ class Request
             CURLOPT_URL => $url,
             CURLOPT_PORT => self::APNS_PORT,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $message->getPayload()->toJson(),
+            CURLOPT_POSTFIELDS => $notification->getPayload()->toJson(),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HEADER => true,
         ];
+
+        $this->prepareApnsHeaders($notification);
+    }
+
+    /**
+     * Add curl options.
+     *
+     * @param int $key
+     * @param $value
+     * @return Request
+     */
+    public function addOption(int $key, $value): Request
+    {
+        $this->options[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Add curl options.
+     *
+     * @param array $options
+     * @return Request
+     */
+    public function addOptions(array $options): Request
+    {
+        $this->headers = array_merge($this->options, $options);
+
+        return $this;
     }
 
     public function getOptions()
@@ -55,18 +98,68 @@ class Request
         return $this->options;
     }
 
-    private function getProductionUrl(Message $message)
+    /**
+     * Add request header.
+     *
+     * @param string $header
+     */
+    public function addHeader(string $header)
     {
-        return self::APNS_PRODUCTION_SERVER . $this->getUrlPath($message);
+        $this->headers[] = $header;
     }
 
-    private function getSandboxUrl(Message $message)
+    /**
+     * Add request headers.
+     *
+     * @param Notification[] $headers
+     */
+    public function addHeaders(array $headers)
     {
-        return self::APNS_DEVELOPMENT_SERVER . $this->getUrlPath($message);
+        $this->headers = array_merge($this->headers, $headers);
     }
 
-    private function getUrlPath(Message $message)
+    /**
+     * Get request headers.
+     *
+     * @return array
+     */
+    public function getHeaders(): array
     {
-        return str_replace("{token}", $message->getDeviceToken(), self::APNS_PATH_SCHEMA);
+        return $this->headers;
     }
+
+    private function getProductionUrl(Notification $notification)
+    {
+        return self::APNS_PRODUCTION_SERVER . $this->getUrlPath($notification);
+    }
+
+    private function getSandboxUrl(Notification $notification)
+    {
+        return self::APNS_DEVELOPMENT_SERVER . $this->getUrlPath($notification);
+    }
+
+    private function getUrlPath(Notification $notification)
+    {
+        return str_replace("{token}", $notification->getDeviceToken(), self::APNS_PATH_SCHEMA);
+    }
+
+    private function prepareApnsHeaders(Notification $notification)
+    {
+        if ($notification->getId()) {
+            $this->headers[] = self::HEADER_APNS_ID . ': ' . $notification->getId();
+        }
+
+        if ($notification->getExpirationAt()) {
+            $this->headers[] = self::HEADER_APNS_EXPIRATION . ': ' . $notification->getExpirationAt();
+        }
+
+        if ($notification->getPriority()) {
+            $this->headers[] = self::HEADER_APNS_PRIORITY . ': ' . $notification->getPriority();
+        }
+
+        if ($notification->getCollapseId()) {
+            $this->headers[] = self::HEADER_APNS_COLLAPSE_ID . ': ' . $notification->getCollapseId();
+        }
+    }
+
 }

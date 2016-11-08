@@ -12,7 +12,7 @@
 namespace Pushok\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Pushok\Message;
+use Pushok\Notification;
 use Pushok\Payload;
 use Pushok\Request;
 
@@ -21,7 +21,7 @@ class RequestTest extends TestCase
     public function testOptionsForProductionRequest()
     {
         $payload = Payload::create();
-        $message = new Message($payload, '123');
+        $message = new Notification($payload, '123');
         $request = new Request($message, true);
 
         $this->assertEquals([
@@ -39,7 +39,7 @@ class RequestTest extends TestCase
     public function testOptionsForSandboxRequest()
     {
         $payload = Payload::create();
-        $message = new Message($payload, '123');
+        $message = new Notification($payload, '123');
         $request = new Request($message, false);
 
         $this->assertEquals([

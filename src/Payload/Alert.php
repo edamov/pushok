@@ -38,6 +38,13 @@ class Alert implements \JsonSerializable
     private $title;
 
     /**
+     * A subtitle.
+     *
+     * @var string
+     */
+    private $subtitle;
+
+    /**
      * The text of the alert message.
      *
      * @var string
@@ -106,9 +113,9 @@ class Alert implements \JsonSerializable
      * Set Alert title.
      *
      * @param string $value
-     * @return $this
+     * @return Alert
      */
-    public function setTitle(string $value)
+    public function setTitle(string $value): Alert
     {
         $this->title = $value;
 
@@ -126,12 +133,35 @@ class Alert implements \JsonSerializable
     }
 
     /**
+     * Set Alert title.
+     *
+     * @param string $value
+     * @return Alert
+     */
+    public function setSubtitle(string $value): Alert
+    {
+        $this->subtitle = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get Alert subtitle.
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        return $this->subtitle;
+    }
+
+    /**
      * Set Alert body.
      *
      * @param string $value
-     * @return $this
+     * @return Alert
      */
-    public function setBody(string $value)
+    public function setBody(string $value): Alert
     {
         $this->body = $value;
 
@@ -152,9 +182,9 @@ class Alert implements \JsonSerializable
      * Set title-loc-key.
      *
      * @param string|null $value
-     * @return $this
+     * @return Alert
      */
-    public function setTitleLocKey(string $value = null)
+    public function setTitleLocKey(string $value = null): Alert
     {
         $this->titleLocKey = $value;
 
@@ -175,9 +205,9 @@ class Alert implements \JsonSerializable
      * Set title-loc-args.
      *
      * @param array|null $value
-     * @return $this
+     * @return Alert
      */
-    public function setTitleLocArgs(array $value = null)
+    public function setTitleLocArgs(array $value = null): Alert
     {
         $this->titleLocArgs = $value;
 
@@ -198,9 +228,9 @@ class Alert implements \JsonSerializable
      * Set action-loc-key.
      *
      * @param string|null $value
-     * @return $this
+     * @return Alert
      */
-    public function setActionLocKey(string $value = null)
+    public function setActionLocKey(string $value = null): Alert
     {
         $this->actionLocKey = $value;
 
@@ -221,9 +251,9 @@ class Alert implements \JsonSerializable
      * Set loc-key.
      *
      * @param string $value
-     * @return $this
+     * @return Alert
      */
-    public function setLocKey(string $value)
+    public function setLocKey(string $value): Alert
     {
         $this->locKey = $value;
 
@@ -244,9 +274,9 @@ class Alert implements \JsonSerializable
      * Set loc-args.
      *
      * @param array $value
-     * @return $this
+     * @return Alert
      */
-    public function setLocArgs(array $value)
+    public function setLocArgs(array $value): Alert
     {
         $this->locArgs = $value;
 
@@ -291,9 +321,9 @@ class Alert implements \JsonSerializable
      * @see http://bit.ly/mutable-content
      *
      * @param bool $value
-     * @return $this
+     * @return Alert
      */
-    public function setMutableContent(bool $value)
+    public function setMutableContent(bool $value): Alert
     {
         $this->mutableContent = $value;
 

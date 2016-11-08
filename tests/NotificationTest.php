@@ -12,14 +12,14 @@
 namespace Pushok\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Pushok\Message;
+use Pushok\Notification;
 use Pushok\Payload;
 
 class MessageTest extends TestCase
 {
     public function testGetDeviceToken()
     {
-        $message = new Message(Payload::create(), 'deviceTokenString');
+        $message = new Notification(Payload::create(), 'deviceTokenString');
 
         $this->assertEquals('deviceTokenString', $message->getDeviceToken());
     }
@@ -28,7 +28,7 @@ class MessageTest extends TestCase
     {
         $payload = Payload::create();
 
-        $message = new Message($payload, 'deviceTokenString');
+        $message = new Notification($payload, 'deviceTokenString');
 
         $this->assertSame($payload, $message->getPayload());
     }

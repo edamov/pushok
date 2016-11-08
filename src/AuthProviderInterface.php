@@ -20,8 +20,8 @@ interface AuthProviderInterface
     /**
      * Authenticate client
      *
-     * @param $curlHandle resource a cURL handle
+     * @param Request $request
      * @return void
      */
-    public function authenticateClient($curlHandle);
+    public function authenticateClient(Request $request);
 }

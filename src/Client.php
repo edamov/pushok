@@ -18,11 +18,11 @@ namespace Pushok;
 class Client
 {
     /**
-     * Array of messages.
+     * Array of notifications.
      *
-     * @var Message[]
+     * @var Notification[]
      */
-    private $messages = [];
+    private $notifications = [];
 
     /**
      * Authentication provider.
@@ -51,7 +51,7 @@ class Client
     }
 
     /**
-     * Push messages to APNs.
+     * Push notifications to APNs.
      *
      * @return array
      */
@@ -60,10 +60,10 @@ class Client
         $curlHandle = curl_init();
 
         $responseCollection = [];
-        foreach ($this->messages as $message) {
-            $request = new Request($message, $this->isProductionEnv);
+        foreach ($this->notifications as $notification) {
+            $request = new Request($notification, $this->isProductionEnv);
 
-            $this->authProvider->authenticateClient($curlHandle);
+            $this->authProvider->authenticateClient($request);
 
             $result = $this->send($curlHandle, $request);
 
@@ -90,37 +90,38 @@ class Client
     private function send($curlHandle, Request $request)
     {
         curl_setopt_array($curlHandle, $request->getOptions());
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $request->getHeaders());
 
         return curl_exec($curlHandle);
     }
 
     /**
-     * Add message in queue for sending.
+     * Add notification in queue for sending.
      *
-     * @param Message $message
+     * @param Notification $notification
      */
-    public function addMessage(Message $message)
+    public function addNotification(Notification $notification)
     {
-        $this->messages[] = $message;
+        $this->notifications[] = $notification;
     }
 
     /**
-     * Add several messages in queue for sending.
+     * Add several notifications in queue for sending.
      *
-     * @param Message[] $messages
+     * @param Notification[] $notifications
      */
-    public function addMessages(array $messages)
+    public function addNotifications(array $notifications)
     {
-        $this->messages = array_merge($this->messages, $messages);
+        $this->notifications = array_merge($this->notifications, $notifications);
     }
 
     /**
-     * Get already added messages.
+     * Get already added notifications.
      *
-     * @return Message[]
+     * @return Notification[]
      */
-    public function getMessages()
+    public function getNotifications()
     {
-        return $this->messages;
+        return $this->notifications;
     }
 }
