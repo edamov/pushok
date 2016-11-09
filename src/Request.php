@@ -149,8 +149,8 @@ class Request
             $this->headers[] = self::HEADER_APNS_ID . ': ' . $notification->getId();
         }
 
-        if ($notification->getExpirationAt()) {
-            $this->headers[] = self::HEADER_APNS_EXPIRATION . ': ' . $notification->getExpirationAt();
+        if ($notification->getExpirationAt() instanceof \DateTime) {
+            $this->headers[] = self::HEADER_APNS_EXPIRATION . ': ' . $notification->getExpirationAt()->getTimestamp();
         }
 
         if ($notification->getPriority()) {
@@ -161,5 +161,4 @@ class Request
             $this->headers[] = self::HEADER_APNS_COLLAPSE_ID . ': ' . $notification->getCollapseId();
         }
     }
-
 }

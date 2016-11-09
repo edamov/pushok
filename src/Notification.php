@@ -145,7 +145,7 @@ class Notification
      *
      * @return int|null
      */
-    public function getPriority(): int
+    public function getPriority()
     {
         return $this->priority;
     }
