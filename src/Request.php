@@ -127,7 +127,7 @@ class Request
 
     private function prepareApnsHeaders(Notification $notification)
     {
-        if ($notification->getId()) {
+        if (!empty($notification->getId())) {
             $this->headers[self::HEADER_APNS_ID] =  $notification->getId();
         }
 
@@ -135,11 +135,11 @@ class Request
             $this->headers[self::HEADER_APNS_EXPIRATION] = $notification->getExpirationAt()->getTimestamp();
         }
 
-        if ($notification->getPriority()) {
+        if (is_int($notification->getPriority())) {
             $this->headers[self::HEADER_APNS_PRIORITY] =  $notification->getPriority();
         }
 
-        if ($notification->getCollapseId()) {
+        if (!empty($notification->getCollapseId())) {
             $this->headers[self::HEADER_APNS_COLLAPSE_ID ] = $notification->getCollapseId();
         }
     }

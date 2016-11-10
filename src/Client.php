@@ -11,6 +11,11 @@
 
 namespace Pushok;
 
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Promise;
+
 /**
  * Class Client
  * @package Pushok
@@ -57,42 +62,27 @@ class Client
      */
     public function push(): array
     {
-        $curlHandle = curl_init();
+        $client = new GuzzleClient();
 
-        $responseCollection = [];
-        foreach ($this->notifications as $notification) {
+        $promises = [];
+        foreach ($this->notifications as $k => $notification) {
             $request = new Request($notification, $this->isProductionEnv);
 
             $this->authProvider->authenticateClient($request);
 
-            $result = $this->send($curlHandle, $request);
-
-            list($headers, $body) = explode("\r\n\r\n", $result, 2);
-
-            $statusCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-
-            $responseCollection[] = new Response($statusCode, $headers, $body);
+            $promises[] = $client->postAsync($request->getUri(), [
+                'version' => 2.0,
+                'http_errors' => false,
+                'body' => $request->getBody(),
+                'headers' => $request->getHeaders()
+            ]);
         }
 
-        curl_close($curlHandle);
+        $results = Promise\settle($promises)->wait();
+
+        $responseCollection = $this->mapResults($results);
 
         return $responseCollection;
-    }
-
-    /**
-     * Send request.
-     *
-     * @param $curlHandle
-     * @param Request $request
-     *
-     * @return mixed Return the result on success, false on failure
-     */
-    private function send($curlHandle, Request $request)
-    {
-        curl_setopt_array($curlHandle, $request->getOptions());
-        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $request->getHeaders());
-
-        return curl_exec($curlHandle);
     }
 
     /**
@@ -123,5 +113,33 @@ class Client
     public function getNotifications()
     {
         return $this->notifications;
+    }
+
+    private function mapResults($results)
+    {
+        $responseCollection = [];
+
+        foreach ($results as $result) {
+            if (isset($result['value'])) {
+                $responseCollection[] = Response::createFromPsrInterface($result['value']);
+            } elseif (isset($result['reason'])) {
+                $responseCollection[] = $this->mapErrorResponse($result['reason']);
+            }
+        }
+
+        return $responseCollection;
+    }
+
+    private function mapErrorResponse(TransferException $error)
+    {
+        if ($error instanceof RequestException) {
+            if ($error->hasResponse()) {
+                return Response::createFromPsrInterface($error->getResponse());
+            }
+
+            return new Response(0, null, $error->getHandlerContext()['error']);
+        }
+
+        throw new \Exception($error->getMessage(), $error->getCode());
     }
 }
