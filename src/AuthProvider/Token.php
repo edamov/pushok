@@ -129,8 +129,8 @@ class Token implements AuthProviderInterface
     public function authenticateClient(Request $request)
     {
         $request->addHeaders([
-            "apns-topic: " . $this->appBundleId,
-            'Authorization: bearer ' . $this->token
+            "apns-topic" => $this->appBundleId,
+            'Authorization' => 'bearer ' . $this->token
         ]);
     }
 
