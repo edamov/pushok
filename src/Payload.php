@@ -275,7 +275,7 @@ class Payload implements \JsonSerializable
      */
     public function toJson(): string
     {
-        return json_encode($this, JSON_UNESCAPED_UNICODE);
+        return json_encode($this, JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT);
     }
 
     /**

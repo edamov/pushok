@@ -18,39 +18,37 @@ use Pushok\Request;
 
 class RequestTest extends TestCase
 {
-    public function testOptionsForProductionRequest()
+    public function testGetSandboxUri()
     {
-        $payload = Payload::create();
-        $message = new Notification($payload, '123');
-        $request = new Request($message, true);
+        $request = new Request($this->createNotification(), $production = false);
 
-        $this->assertEquals([
-            84 => 3,
-            10002 => 'https://api.push.apple.com/3/device/123',
-            3 => 443,
-            47 => 1,
-            10015 => '{"aps":[]}',
-            19913 => 1,
-            13 => 30,
-            42 => 1
-        ], $request->getOptions());
+        $this->assertEquals('https://api.development.push.apple.com/3/device/123', $request->getUri());
     }
 
-    public function testOptionsForSandboxRequest()
+    public function testGetProductionUri()
     {
-        $payload = Payload::create();
-        $message = new Notification($payload, '123');
-        $request = new Request($message, false);
+        $request = new Request($this->createNotification(), $production = true);
 
-        $this->assertEquals([
-            84 => 3,
-            10002 => 'https://api.development.push.apple.com/3/device/123',
-            3 => 443,
-            47 => 1,
-            10015 => '{"aps":[]}',
-            19913 => 1,
-            13 => 30,
-            42 => 1
-        ], $request->getOptions());
+        $this->assertEquals('https://api.push.apple.com/3/device/123', $request->getUri());
+    }
+
+    public function testGetBody()
+    {
+        $request = new Request($this->createNotification(), $production = false);
+
+        $this->assertEquals('{"aps":{}}', $request->getBody());
+    }
+
+    public function testGetHeaders()
+    {
+        $request = new Request($this->createNotification(), $production = false);
+        $request->addHeader('Connection', 'keep-alive');
+
+        $this->assertEquals(['Connection' => 'keep-alive'], $request->getHeaders());
+    }
+    
+    private function createNotification()
+    {
+        return new Notification(Payload::create(), '123');
     }
 }
