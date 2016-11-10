@@ -73,7 +73,7 @@ class Request
     /**
      * Add request headers.
      *
-     * @param Notification[] $headers
+     * @param array $headers
      */
     public function addHeaders(array $headers)
     {
