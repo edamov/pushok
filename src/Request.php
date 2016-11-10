@@ -38,74 +38,36 @@ class Request
     private $headers = [];
 
     /**
-     * Curl options.
+     * Request uri.
      *
-     * @var array
+     * @var string
      */
-    private $options = [];
+    private $uri;
+
+    /**
+     * Request body.
+     *
+     * @var string
+     */
+    private $body;
 
     public function __construct(Notification $notification, $isProductionEnv)
     {
-        $url = $isProductionEnv ? $this->getProductionUrl($notification) : $this->getSandboxUrl($notification);
-
-        if (!defined('CURL_HTTP_VERSION_2')) {
-            define('CURL_HTTP_VERSION_2', 3);
-        }
-
-        $this->options = [
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2,
-            CURLOPT_URL => $url,
-            CURLOPT_PORT => self::APNS_PORT,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $notification->getPayload()->toJson(),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HEADER => true,
-        ];
+        $this->uri = $isProductionEnv ? $this->getProductionUrl($notification) : $this->getSandboxUrl($notification);
+        $this->body = $notification->getPayload()->toJson();
 
         $this->prepareApnsHeaders($notification);
     }
 
     /**
-     * Add curl options.
-     *
-     * @param int $key
-     * @param $value
-     * @return Request
-     */
-    public function addOption(int $key, $value): Request
-    {
-        $this->options[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Add curl options.
-     *
-     * @param array $options
-     * @return Request
-     */
-    public function addOptions(array $options): Request
-    {
-        $this->headers = array_merge($this->options, $options);
-
-        return $this;
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
      * Add request header.
      *
-     * @param string $header
+     * @param string $key
+     * @param $value
      */
-    public function addHeader(string $header)
+    public function addHeader(string $key, $value)
     {
-        $this->headers[] = $header;
+        $this->headers[$key] = $value;
     }
 
     /**
@@ -128,6 +90,26 @@ class Request
         return $this->headers;
     }
 
+    /**
+     * Get request uri.
+     *
+     * @return string
+     */
+    public function getUri(): string
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Get request body.
+     *
+     * @return string
+     */
+    public function getBody(): string
+    {
+        return $this->body;
+    }
+
     private function getProductionUrl(Notification $notification)
     {
         return self::APNS_PRODUCTION_SERVER . $this->getUrlPath($notification);
@@ -146,19 +128,19 @@ class Request
     private function prepareApnsHeaders(Notification $notification)
     {
         if ($notification->getId()) {
-            $this->headers[] = self::HEADER_APNS_ID . ': ' . $notification->getId();
+            $this->headers[self::HEADER_APNS_ID] =  $notification->getId();
         }
 
         if ($notification->getExpirationAt() instanceof \DateTime) {
-            $this->headers[] = self::HEADER_APNS_EXPIRATION . ': ' . $notification->getExpirationAt()->getTimestamp();
+            $this->headers[self::HEADER_APNS_EXPIRATION] = $notification->getExpirationAt()->getTimestamp();
         }
 
         if ($notification->getPriority()) {
-            $this->headers[] = self::HEADER_APNS_PRIORITY . ': ' . $notification->getPriority();
+            $this->headers[self::HEADER_APNS_PRIORITY] =  $notification->getPriority();
         }
 
         if ($notification->getCollapseId()) {
-            $this->headers[] = self::HEADER_APNS_COLLAPSE_ID . ': ' . $notification->getCollapseId();
+            $this->headers[self::HEADER_APNS_COLLAPSE_ID ] = $notification->getCollapseId();
         }
     }
 }
