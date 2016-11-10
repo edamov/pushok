@@ -10,6 +10,7 @@
  */
 
 namespace Pushok;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Response
@@ -19,6 +20,7 @@ namespace Pushok;
  */
 class Response
 {
+    const REQUEST_ERROR = 0;
     const APNS_SUCCESS = 200;
     const APNS_BAD_REQUEST = 400;
     const APNS_AUTH_PROVIDER_ERROR = 403;
@@ -35,6 +37,7 @@ class Response
      * @var array
      */
     private static $reasonPhrases = [
+        0 => 'Request error.',
         200 => 'Success.',
         400 => 'Bad request.',
         403 => 'There was an error with the certificate or with the provider authentication token.',
@@ -108,7 +111,7 @@ class Response
     /**
      * APNs Id.
      *
-     * @var string
+     * @var string|null
      */
     private $apnsId;
 
@@ -130,37 +133,29 @@ class Response
      * Response constructor.
      *
      * @param int $statusCode
-     * @param string $headers
-     * @param string $body
+     * @param string|null $apnsId
+     * @param string $errorReason
      */
-    public function __construct(int $statusCode, string $headers, string $body)
+    public function __construct(int $statusCode, $apnsId, string $errorReason)
     {
         $this->statusCode = $statusCode;
-        $this->apnsId = self::fetchApnsId($headers);
-        $this->errorReason = self::fetchErrorReason($body);
+        $this->apnsId = $apnsId;
+        $this->errorReason = $errorReason;
     }
 
     /**
-     * Fetch APNs Id from response headers.
+     * Create APNs response from PSR7 interface.
      *
-     * @param string $headers
-     * @return string
+     * @param ResponseInterface $response
+     * @return static
      */
-    private static function fetchApnsId(string $headers): string
+    public static function createFromPsrInterface(ResponseInterface $response)
     {
-        $data = explode("\n", trim($headers));
+        $statusCode = $response->getStatusCode();
+        $apnsId = $response->getHeader('apns-id')[0];
+        $errorReason = self::fetchErrorReason($response->getBody()->getContents());
 
-        foreach ($data as $part) {
-            $middle = explode(":", $part);
-
-            if ($middle[0] !== 'apns-id') {
-                continue;
-            }
-
-            return $middle[1];
-        }
-
-        return '';
+        return new static($statusCode, $apnsId, $errorReason);
     }
 
     /**
@@ -179,7 +174,7 @@ class Response
      *
      * @return string
      */
-    public function getApnsId(): string
+    public function getApnsId()
     {
         return $this->apnsId;
     }
@@ -221,6 +216,10 @@ class Response
      */
     public function getErrorDescription(): string
     {
-        return self::$errorReasons[$this->statusCode][$this->errorReason] ?: '';
+        if (isset(self::$errorReasons[$this->statusCode][$this->errorReason])) {
+            return self::$errorReasons[$this->statusCode][$this->errorReason];
+        }
+
+        return '';
     }
 }
