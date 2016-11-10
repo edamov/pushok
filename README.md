@@ -17,10 +17,9 @@ Pushok is a simple PHP library for sending push headers to APNs.
 - [X] Uses new Apple APNs HTTP/2 connection
 - [X] Supports JWT-based authentication
 - [X] Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
+- [X] Uses concurrent requests to APNs
 - [ ] Tested and working in APNs production environment
 - [ ] Supports Certificate-based authentication
-- [ ] Supports parallel requests to APNs
-- [ ] Supports async requests to APNs
 
 ## Requirements
 
