@@ -10,6 +10,7 @@
  */
 
 namespace Pushok;
+
 use Psr\Http\Message\ResponseInterface;
 
 /**

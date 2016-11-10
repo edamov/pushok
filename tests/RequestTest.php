@@ -46,7 +46,7 @@ class RequestTest extends TestCase
 
         $this->assertEquals(['Connection' => 'keep-alive'], $request->getHeaders());
     }
-    
+
     private function createNotification()
     {
         return new Notification(Payload::create(), '123');
