@@ -18,7 +18,9 @@
     ],
     "require": {
         "php": "^7.0",
+        "ext-curl": "*",
         "lib-curl": ">=7.46.0",
+        "ext-openssl": "*",
         "lib-openssl": ">=1.0.2.5",
         "guzzlehttp/guzzle": "~6.0",
         "spomky-labs/jose": "^6.1.1"
