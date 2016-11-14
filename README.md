@@ -24,8 +24,8 @@ Pushok is a simple PHP library for sending push headers to APNs.
 ## Requirements
 
 * PHP >= 7.0
-* PHP curl >= 7.46.0 (with http/2 support enabled)
-* PHP openssl >= 1.0.2e 
+* lib-curl >= 7.46.0 (with http/2 support enabled)
+* lib-openssl >= 1.0.2e 
 
 ## Install
 
