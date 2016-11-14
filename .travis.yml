@@ -13,6 +13,9 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+before_install:
+  -  apt-get install php-curl php-openssl
+
 before_script:
   - travis_retry composer self-update
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
