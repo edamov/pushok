@@ -19,7 +19,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @see http://bit.ly/communicating-with-apns
  */
-class Response
+class Response implements ApnsResponseInterface
 {
     const REQUEST_ERROR = 0;
     const APNS_SUCCESS = 200;
@@ -173,7 +173,7 @@ class Response
     /**
      * Get APNs Id
      *
-     * @return string
+     * @return string|null
      */
     public function getApnsId()
     {
