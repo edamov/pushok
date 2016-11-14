@@ -110,21 +110,44 @@ class Request
         return $this->body;
     }
 
+    /**
+     * Get Url for APNs production server.
+     *
+     * @param Notification $notification
+     * @return string
+     */
     private function getProductionUrl(Notification $notification)
     {
         return self::APNS_PRODUCTION_SERVER . $this->getUrlPath($notification);
     }
 
+    /**
+     * Get Url for APNs sandbox server.
+     *
+     * @param Notification $notification
+     * @return string
+     */
     private function getSandboxUrl(Notification $notification)
     {
         return self::APNS_DEVELOPMENT_SERVER . $this->getUrlPath($notification);
     }
 
+    /**
+     * Get Url path.
+     *
+     * @param Notification $notification
+     * @return mixed
+     */
     private function getUrlPath(Notification $notification)
     {
         return str_replace("{token}", $notification->getDeviceToken(), self::APNS_PATH_SCHEMA);
     }
 
+    /**
+     * Prepare APNs headers before sending request.
+     *
+     * @param Notification $notification
+     */
     private function prepareApnsHeaders(Notification $notification)
     {
         if (!empty($notification->getId())) {

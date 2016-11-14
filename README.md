@@ -23,7 +23,7 @@ Pushok is a simple PHP library for sending push headers to APNs.
 
 ## Requirements
 
-* PHP >= 7.0.7
+* PHP >= 7.0
 * PHP curl >= 7.46.0 (with http/2 support enabled)
 * PHP openssl >= 1.0.2e 
 
@@ -51,7 +51,7 @@ $authProvider = AuthProvider\Token::create($options);
 $alert = Alert::create()->setTitle('Hello!');
 $payload = Payload::create()->setAlert($alert);
 
-$deviceTokens = ['111', '222', '333'];
+$deviceTokens = ['<device_token_1>', '<device_token_2>', '<device_token_3>'];
 
 $notifications = [];
 foreach ($deviceTokens as $deviceToken) {
@@ -61,7 +61,7 @@ foreach ($deviceTokens as $deviceToken) {
 $client = new Client($authProvider, $production = false);
 $client->addNotifications($notifications);
 
-$responses = $client->push(); // returns an array of Responses (one Response per Notification)
+$responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
 
 foreach ($responses as $response) {
     $response->getApnsId();

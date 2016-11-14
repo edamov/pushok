@@ -58,7 +58,7 @@ class Client
     /**
      * Push notifications to APNs.
      *
-     * @return array
+     * @return ApnsResponseInterface[]
      */
     public function push(): array
     {
@@ -115,7 +115,13 @@ class Client
         return $this->notifications;
     }
 
-    private function mapResults($results)
+    /**
+     * Map APNs responses with library responses.
+     *
+     * @param array $results
+     * @return ApnsResponseInterface[]
+     */
+    private function mapResults(array $results)
     {
         $responseCollection = [];
 
@@ -130,6 +136,13 @@ class Client
         return $responseCollection;
     }
 
+    /**
+     * Map APNs error with library response.
+     *
+     * @param TransferException $error
+     * @return Response
+     * @throws \Exception
+     */
     private function mapErrorResponse(TransferException $error)
     {
         if ($error instanceof RequestException) {

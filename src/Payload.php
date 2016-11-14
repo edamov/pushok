@@ -319,6 +319,11 @@ class Payload implements \JsonSerializable
         return $payload;
     }
 
+    /**
+     * Get default payload structure.
+     *
+     * @return array
+     */
     private static function getDefaultPayloadStructure()
     {
         return [self::PAYLOAD_ROOT_KEY => []];
