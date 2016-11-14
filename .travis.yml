@@ -13,8 +13,10 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-install:
-  -  sudo apt-get install php-curl php-openssl
+addons:
+    apt_packages:
+        - php-curl
+        - php-openssl
 
 before_script:
   - travis_retry composer self-update
