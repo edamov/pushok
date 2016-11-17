@@ -11,11 +11,6 @@
 
 namespace Pushok;
 
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\TransferException;
-use GuzzleHttp\Promise;
-
 /**
  * Class Client
  * @package Pushok
@@ -62,25 +57,47 @@ class Client
      */
     public function push(): array
     {
-        $client = new GuzzleClient();
+        $mh = curl_multi_init();
 
-        $promises = [];
+        curl_multi_setopt($mh, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
+
+        $handles = [];
         foreach ($this->notifications as $k => $notification) {
             $request = new Request($notification, $this->isProductionEnv);
+            $handles[] = $ch = curl_init();
 
-            $this->authProvider->authenticateClient($request);
+            $this->authProvider->authenticateClient($ch);
 
-            $promises[] = $client->postAsync($request->getUri(), [
-                'version' => 2.0,
-                'http_errors' => false,
-                'body' => $request->getBody(),
-                'headers' => $request->getHeaders()
-            ]);
+            curl_setopt_array($ch, $request->getOptions());
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
+
+            curl_multi_add_handle($mh, $ch);
         }
 
-        $results = Promise\settle($promises)->wait();
+        $active = null;
+        do {
+            $mrc = curl_multi_exec($mh, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
 
-        $responseCollection = $this->mapResults($results);
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($mh) != -1) {
+                do {
+                    $mrc = curl_multi_exec($mh, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            }
+        }
+
+        $responseCollection = [];
+        foreach ($handles as $handle) {
+            curl_multi_remove_handle($mh, $handle);
+            $result = curl_multi_getcontent($handle);
+
+            list($headers, $body) = explode("\r\n\r\n", $result, 2);
+            $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            $responseCollection[] = new Response($statusCode, $headers, $body);
+        }
+
+        curl_multi_close($mh);
 
         return $responseCollection;
     }
@@ -113,46 +130,5 @@ class Client
     public function getNotifications()
     {
         return $this->notifications;
-    }
-
-    /**
-     * Map APNs responses with library responses.
-     *
-     * @param array $results
-     * @return ApnsResponseInterface[]
-     */
-    private function mapResults(array $results)
-    {
-        $responseCollection = [];
-
-        foreach ($results as $result) {
-            if (isset($result['value'])) {
-                $responseCollection[] = Response::createFromPsrInterface($result['value']);
-            } elseif (isset($result['reason'])) {
-                $responseCollection[] = $this->mapErrorResponse($result['reason']);
-            }
-        }
-
-        return $responseCollection;
-    }
-
-    /**
-     * Map APNs error with library response.
-     *
-     * @param TransferException $error
-     * @return Response
-     * @throws \Exception
-     */
-    private function mapErrorResponse(TransferException $error)
-    {
-        if ($error instanceof RequestException) {
-            if ($error->hasResponse()) {
-                return Response::createFromPsrInterface($error->getResponse());
-            }
-
-            return new Response(0, null, $error->getHandlerContext()['error']);
-        }
-
-        throw new \Exception($error->getMessage(), $error->getCode());
     }
 }

@@ -25,7 +25,7 @@ class ResponseTest extends TestCase
 
     public function testGetApnsId()
     {
-        $response = new Response(200, '123', 'body');
+        $response = new Response(200, 'apns-id: 123', 'body');
 
         $this->assertEquals('123', $response->getApnsId());
     }
@@ -39,14 +39,14 @@ class ResponseTest extends TestCase
 
     public function testGetErrorReason()
     {
-        $response = new Response(400, 'headers', 'BadCollapseId');
+        $response = new Response(400, 'headers', '{"reason": "BadCollapseId"}');
 
         $this->assertEquals('BadCollapseId', $response->getErrorReason());
     }
 
     public function testGetErrorDescription()
     {
-        $response = new Response(400, 'headers', 'BadCollapseId');
+        $response = new Response(400, 'headers', '{"reason": "BadCollapseId"}');
 
         $this->assertEquals('The collapse identifier exceeds the maximum allowed size', $response->getErrorDescription());
     }

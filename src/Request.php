@@ -51,10 +51,28 @@ class Request
      */
     private $body;
 
+    /**
+     * Curl options.
+     *
+     * @var array
+     */
+    private $options;
+
     public function __construct(Notification $notification, $isProductionEnv)
     {
         $this->uri = $isProductionEnv ? $this->getProductionUrl($notification) : $this->getSandboxUrl($notification);
         $this->body = $notification->getPayload()->toJson();
+
+        $this->options = [
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2,
+            CURLOPT_URL => $this->uri,
+            CURLOPT_PORT => self::APNS_PORT,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $notification->getPayload()->toJson(),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_HEADER => true,
+        ];
 
         $this->prepareApnsHeaders($notification);
     }
@@ -91,6 +109,20 @@ class Request
     }
 
     /**
+     * Get decorated request headers.
+     *
+     * @return array
+     */
+    public function getDecoratedHeaders(): array
+    {
+        $decoratedHeaders = [];
+        foreach ($this->headers as $name => $value) {
+            $decoratedHeaders[] = $name . ': ' . $value;
+        }
+        return $decoratedHeaders;
+    }
+
+    /**
      * Get request uri.
      *
      * @return string
@@ -108,6 +140,16 @@ class Request
     public function getBody(): string
     {
         return $this->body;
+    }
+
+    /**
+     * Get request options.
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     /**
