@@ -18,7 +18,7 @@ Pushok is a simple PHP library for sending push headers to APNs.
 - [X] Supports JWT-based authentication
 - [X] Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
 - [X] Uses concurrent requests to APNs
-- [ ] Tested and working in APNs production environment
+- [X] Tested and working in APNs production environment
 - [ ] Supports Certificate-based authentication
 
 ## Requirements
@@ -38,6 +38,15 @@ $ composer require edamov/pushok
 ## Getting Started
 
 ``` php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use Pushok\AuthProvider\Token;
+use Pushok\Client;
+use Pushok\Notification;
+use Pushok\Payload;
+use Pushok\Payload\Alert;
+
 $options = [
     'key_id' => 'AAAABBBBCC', // The Key ID obtained from Apple developer account
     'team_id' => 'DDDDEEEEFF', // The Team ID obtained from Apple developer account
@@ -49,17 +58,27 @@ $options = [
 $authProvider = AuthProvider\Token::create($options);
 
 $alert = Alert::create()->setTitle('Hello!');
+$alert = $alert->setBody('First push notification');
+
 $payload = Payload::create()->setAlert($alert);
+
+//set notification sound to default
+$payload = $payload->setSound('default');
+
+//add custom value to your notification, needs to be customized
+$payload = $payload->setCustomValue("key",$value);
 
 $deviceTokens = ['<device_token_1>', '<device_token_2>', '<device_token_3>'];
 
 $notifications = [];
 foreach ($deviceTokens as $deviceToken) {
-    $notifications[] = new Notification($deviceToken, $payload);
+    $notifications[] = new Notification($payload,$deviceToken);
 }
 
 $client = new Client($authProvider, $production = false);
 $client->addNotifications($notifications);
+
+
 
 $responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
 
