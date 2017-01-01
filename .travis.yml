@@ -2,29 +2,14 @@ language: php
 
 php:
   - 7.0
-  - 7.1
 
-# This triggers builds to run on the new TravisCI infrastructure.
-# See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-sudo: false
+sudo: required
 
-## Cache composer
-cache:
-  directories:
-    - $HOME/.composer/cache
+services:
+  - docker
 
-addons:
-    apt_packages:
-        - php-curl
-        - php-openssl
-
-before_script:
-  - travis_retry composer self-update
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+before_install:
+   - docker build -t edamov/pushok:7.0 .
 
 script:
-  - vendor/bin/phpcs --standard=psr2 src/
-  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-
-after_script:
-  - php vendor/bin/coveralls -v
+  - docker run edamov/pushok:7.0 /bin/sh -c "cd /home/pushok; php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist; vendor/bin/phpcs --standard=psr2 src/; vendor/bin/phpunit --coverage-clover build/logs/clover.xml;"
