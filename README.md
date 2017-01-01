@@ -1,12 +1,12 @@
 # Pushok
 
-[![PHP 7 ready](http://php7ready.timesplinter.ch/edamov/pushok/master/badge.svg)](https://travis-ci.org/edamov/pushok)
+[![PHP >= 7.0](https://img.shields.io/badge/php-%3E%3D%207.0-8892BF.svg?style=flat-square)](https://php.net/)
 [![Latest Version on Packagist][ico-version]][link-packagist]
-[![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status](https://coveralls.io/repos/github/edamov/pushok/badge.svg?branch=master)](https://coveralls.io/github/edamov/pushok?branch=master)
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Software License][ico-license]](LICENSE.md)
 
 > **Note:** This library is under development
 
