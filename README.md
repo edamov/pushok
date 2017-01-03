@@ -5,6 +5,7 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Coverage Status](https://coveralls.io/repos/github/edamov/pushok/badge.svg?branch=master)](https://coveralls.io/github/edamov/pushok?branch=master)
+[![Quality Score][ico-code-quality]][link-code-quality]
 [![Software License][ico-license]](LICENSE.md)
 
 > **Note:** This library is under development
