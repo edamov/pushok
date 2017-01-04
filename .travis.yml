@@ -13,4 +13,4 @@ before_install:
 
 script:
 - docker run --name=php7.0 -e TRAVIS=true -e TRAVIS_JOB_ID="${TRAVIS_JOB_ID}" -d -v /home/travis/build/edamov/pushok:/home/pushok edamov/pushok:7.0 tail -f /dev/null
-- docker exec -t php7.0 /bin/sh -c "apt-get install php-xdebug && cd /home/pushok && php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist && /home/pushok/vendor/bin/phpunit --coverage-clover /home/pushok/build/logs/clover.xml && php /home/pushok/vendor/bin/coveralls -v"
+- docker exec -t php7.0 /bin/sh -c "cd /home/pushok && php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist && /home/pushok/vendor/bin/phpunit --coverage-clover /home/pushok/build/logs/clover.xml && php /home/pushok/vendor/bin/coveralls -v"
