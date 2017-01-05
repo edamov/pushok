@@ -10,7 +10,7 @@
 
 > **Note:** This library is under development
 
-Pushok is a simple PHP library for sending push headers to APNs. 
+Pushok is a simple PHP library for sending push notifications to APNs. 
 
 ## Features
 
