@@ -119,7 +119,13 @@ class Client
      */
     public function addNotifications(array $notifications)
     {
-        $this->notifications = array_merge($this->notifications, $notifications);
+        foreach ($notifications as $notification) {
+            if (in_array($notification, $this->notifications, true)) {
+                continue;
+            }
+
+            $this->addNotification($notification);
+        }
     }
 
     /**
