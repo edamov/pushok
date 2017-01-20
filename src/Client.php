@@ -66,7 +66,7 @@ class Client
             $request = new Request($notification, $this->isProductionEnv);
             $handles[] = $ch = curl_init();
 
-            $this->authProvider->authenticateClient($ch);
+            $this->authProvider->authenticateClient($request);
 
             curl_setopt_array($ch, $request->getOptions());
             curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
