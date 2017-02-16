@@ -22,8 +22,8 @@ class Alert implements \JsonSerializable
 {
     const ALERT_TITLE_KEY = 'title';
     const ALERT_BODY_KEY = 'body';
-    const ALERT_TITLE_LOC_KEY = 'title-loc-key';
-    const ALERT_TITLE_LOC_ARGS_KEY = 'title-loc-args';
+    const ALERT_TITLE_LOC_KEY = 'loc-key';
+    const ALERT_TITLE_LOC_ARGS_KEY = 'loc-args';
     const ALERT_ACTION_LOC_KEY = 'action-loc-key';
     const ALERT_LOC_KEY = 'loc-key';
     const ALERT_LOC_ARGS_KEY = 'loc-args';
