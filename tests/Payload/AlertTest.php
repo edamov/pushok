@@ -32,9 +32,9 @@ class AlertTest extends TestCase
 
     public function testSetTitleLocKey()
     {
-        $alert = Alert::create()->setTitleLocKey('title-loc-key');
+        $alert = Alert::create()->setTitleLocKey('loc-key');
 
-        $this->assertEquals('title-loc-key', $alert->getTitleLocKey());
+        $this->assertEquals('loc-key', $alert->getTitleLocKey());
     }
 
     public function testSetTitleLocArgs()
@@ -84,8 +84,8 @@ class AlertTest extends TestCase
         $alert = Alert::create()
             ->setTitle('title')
             ->setBody('body')
-            ->setTitleLocKey('title-loc-key')
-            ->setTitleLocArgs(['title-loc-arg'])
+            ->setTitleLocKey('loc-key')
+            ->setTitleLocArgs(['loc-arg'])
             ->setActionLocKey('action-loc-key')
             ->setLocKey('loc-key')
             ->setLocArgs(['loc-arg'])
@@ -93,7 +93,7 @@ class AlertTest extends TestCase
             ->setMutableContent(true);
 
         $this->assertJsonStringEqualsJsonString(
-            '{"title":"title","body":"body","title-loc-key":"title-loc-key","title-loc-args":["title-loc-arg"],' .
+            '{"title":"title","body":"body","loc-key":"loc-key","loc-args":["loc-arg"],' .
             '"action-loc-key":"action-loc-key","loc-key":"loc-key","loc-args":["loc-arg"],' .
             '"launch-image":"launch-image","mutable-content":1}',
             $alert->toJson()
