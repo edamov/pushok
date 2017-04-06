@@ -1,7 +1,7 @@
 language: php
 
 php:
-- 7.0
+- 7.1
 
 sudo: required
 
@@ -9,8 +9,8 @@ services:
 - docker
 
 before_install:
-- docker pull edamov/pushok:7.0
+- docker pull edamov/pushok-docker
 
 script:
-- docker run --name=php7.0 -e TRAVIS=true -e TRAVIS_JOB_ID="${TRAVIS_JOB_ID}" -d -v /home/travis/build/edamov/pushok:/home/pushok edamov/pushok:7.0 tail -f /dev/null
-- docker exec -t php7.0 /bin/sh -c "cd /home/pushok && php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist && /home/pushok/vendor/bin/phpunit --coverage-clover /home/pushok/build/logs/clover.xml && php /home/pushok/vendor/bin/coveralls -v"
+- docker run --name=php7.1 -e TRAVIS=true -e TRAVIS_JOB_ID="${TRAVIS_JOB_ID}" -d -v /home/travis/build/edamov/pushok:/home/pushok edamov/pushok-docker tail -f /dev/null
+- docker exec -t php7.1 /bin/sh -c "cd /home/pushok && php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist && /home/pushok/vendor/bin/phpunit --coverage-clover /home/pushok/build/logs/clover.xml && php /home/pushok/vendor/bin/coveralls -v"
