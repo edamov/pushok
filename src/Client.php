@@ -59,6 +59,10 @@ class Client
     {
         $mh = curl_multi_init();
 
+        if (!defined('CURLPIPE_MULTIPLEX')) {
+            define('CURLPIPE_MULTIPLEX', 2);
+        }
+
         curl_multi_setopt($mh, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
 
         $handles = [];

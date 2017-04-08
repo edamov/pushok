@@ -63,6 +63,10 @@ class Request
         $this->uri = $isProductionEnv ? $this->getProductionUrl($notification) : $this->getSandboxUrl($notification);
         $this->body = $notification->getPayload()->toJson();
 
+        if (!defined('CURL_HTTP_VERSION_2')) {
+            define('CURL_HTTP_VERSION_2', 3);
+        }
+
         $this->options = [
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2,
             CURLOPT_URL => $this->uri,
