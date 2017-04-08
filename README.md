@@ -27,7 +27,8 @@ Pushok is a simple PHP library for sending push notifications to APNs.
 * lib-curl >= 7.46.0 (with http/2 support enabled)
 * lib-openssl >= 1.0.2e 
 
-Docker image that meets requirements can be found [here](https://hub.docker.com/r/edamov/pushok).
+Docker image that meets requirements can be found [here](https://hub.docker.com/r/edamov/pushok-docker).
+Or you can follow [this tutorial](https://nathanleclaire.com/blog/2016/08/11/curl-with-http2-support---a-minimal-alpine-based-docker-image/) to create your own docker image with curl with HTTP/2 support.
 
 ## Install
 
