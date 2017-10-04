@@ -75,32 +75,41 @@ class Client
             curl_setopt_array($ch, $request->getOptions());
             curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
 
-            curl_multi_add_handle($mh, $ch);
+            // store device token to identify response
+            curl_setopt($ch, CURLOPT_PRIVATE, $notification->getDeviceToken());
         }
 
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($mh, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-
-        while ($active && $mrc == CURLM_OK) {
-            if (curl_multi_select($mh) == -1) {
-                usleep(1);
-            }
-            do {
-                $mrc = curl_multi_exec($mh, $active);
-            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        $rolling_window = 10;
+        $rolling_window = count($handles) > $rolling_window ? $rolling_window : count($handles);
+        for ($i = 0; $i < $rolling_window; $i++) {
+            curl_multi_add_handle($mh, $handles[$i]);
         }
 
         $responseCollection = [];
-        foreach ($handles as $handle) {
-            curl_multi_remove_handle($mh, $handle);
-            $result = curl_multi_getcontent($handle);
+        do {
+            while(($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
+            if($execrun != CURLM_OK)
+                break;
+            while($done = curl_multi_info_read($mh)) {
+                $handle = $done['handle'];
 
-            list($headers, $body) = explode("\r\n\r\n", $result, 2);
-            $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-            $responseCollection[] = new Response($statusCode, $headers, $body);
-        }
+                $result = curl_multi_getcontent($handle);
+
+                // find out which token the response is about
+                $token = curl_getinfo($handle, CURLINFO_PRIVATE);
+
+                list($headers, $body) = explode("\r\n\r\n", $result, 2);
+                $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+                $responseCollection[$token] = new Response($statusCode, $headers, $body);
+
+                if(isset($handles[$i])) {
+                    curl_multi_add_handle($mh, $handles[$i]);
+                }
+                $i++;
+
+                curl_multi_remove_handle($mh, $handle);
+            }
+        } while ($running);
 
         curl_multi_close($mh);
 

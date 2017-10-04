@@ -85,7 +85,7 @@ $client->addNotifications($notifications);
 
 $responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
 
-foreach ($responses as $response) {
+foreach ($responses as $devicetoken => $response) {
     $response->getApnsId();
     $response->getStatusCode();
     $response->getReasonPhrase();
