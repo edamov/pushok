@@ -26,6 +26,7 @@ class Payload implements \JsonSerializable
     const PAYLOAD_BADGE_KEY = 'badge';
     const PAYLOAD_SOUND_KEY = 'sound';
     const PAYLOAD_CONTENT_AVAILABLE_KEY = 'content-available';
+    const PAYLOAD_MUTABLE_CONTENT_KEY = 'mutable-content';
     const PAYLOAD_CATEGORY_KEY = 'category';
     const PAYLOAD_THREAD_ID_KEY = 'thread-id';
 
@@ -61,6 +62,13 @@ class Payload implements \JsonSerializable
      * @var bool
      */
     private $contentAvailable;
+
+    /**
+     * Include this key with a value of true to configure a mutable content notification.
+     *
+     * @var bool
+     */
+    private $mutableContent;
 
     /**
      * Provide this key with a string value that represents the notification’s type.
@@ -188,6 +196,30 @@ class Payload implements \JsonSerializable
     }
 
     /**
+     * Set the mutable-content key for Notification Service Extensions on iOS10.
+     * @see http://bit.ly/mutable-content
+     *
+     * @param bool $value
+     * @return Payload
+     */
+    public function setMutableContent(bool $value): Payload
+    {
+        $this->mutableContent = $value;
+
+        return $this;
+    }
+
+    /**
+     * Is content mutable.
+     *
+     * @return bool|null
+     */
+    public function hasMutableContent()
+    {
+        return $this->mutableContent;
+    }
+
+    /**
      * Set category.
      *
      * @param string $value
@@ -302,6 +334,10 @@ class Payload implements \JsonSerializable
 
         if (is_bool($this->contentAvailable)) {
             $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_CONTENT_AVAILABLE_KEY] = (int)$this->contentAvailable;
+        }
+
+        if (is_bool($this->mutableContent)) {
+            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_MUTABLE_CONTENT_KEY] = (int)$this->mutableContent;
         }
 
         if (is_string($this->category)) {

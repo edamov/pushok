@@ -60,6 +60,13 @@ class PayloadTest extends TestCase
         $this->assertTrue($payload->isContentAvailable());
     }
 
+    public function testSetMutableContent()
+    {
+        $payload = Payload::create()->setMutableContent(true);
+
+        $this->assertEquals(true, $payload->hasMutableContent());
+    }
+
     public function testSetCustomValue()
     {
         $payload = Payload::create()->setCustomValue('key', 'value');
@@ -78,11 +85,12 @@ class PayloadTest extends TestCase
             ->setCategory('category')
             ->setThreadId('tread-id')
             ->setContentAvailability(true)
+            ->setMutableContent(true)
             ->setCustomValue('key', 'value');
 
         $this->assertJsonStringEqualsJsonString(
             '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": "sound", "category": "category", ' .
-            ' "thread-id": "tread-id", "content-available": 1}, "key": "value"}',
+            ' "thread-id": "tread-id", "mutable-content": 1, "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );
     }

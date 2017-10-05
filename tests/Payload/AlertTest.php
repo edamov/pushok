@@ -72,13 +72,6 @@ class AlertTest extends TestCase
         $this->assertEquals('launch-image', $alert->getLaunchImage());
     }
 
-    public function testSetMutableContent()
-    {
-        $alert = Alert::create()->setMutableContent(true);
-
-        $this->assertEquals(true, $alert->hasMutableContent());
-    }
-
     public function testAlertConvertingToJson()
     {
         $alert = Alert::create()
@@ -89,13 +82,12 @@ class AlertTest extends TestCase
             ->setActionLocKey('action-loc-key')
             ->setLocKey('loc-key')
             ->setLocArgs(['loc-arg'])
-            ->setLaunchImage('launch-image')
-            ->setMutableContent(true);
+            ->setLaunchImage('launch-image');
 
         $this->assertJsonStringEqualsJsonString(
             '{"title":"title","body":"body","loc-key":"loc-key","loc-args":["loc-arg"],' .
             '"action-loc-key":"action-loc-key","loc-key":"loc-key","loc-args":["loc-arg"],' .
-            '"launch-image":"launch-image","mutable-content":1}',
+            '"launch-image":"launch-image"}',
             $alert->toJson()
         );
     }
