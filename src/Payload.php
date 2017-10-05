@@ -186,7 +186,18 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set mutable content.
+     * Get content availability.
+     *
+     * @return bool|null
+     */
+    public function isContentAvailable()
+    {
+        return $this->contentAvailable;
+    }
+
+    /**
+     * Set the mutable-content key for Notification Service Extensions on iOS10.
+     * @see http://bit.ly/mutable-content
      *
      * @param bool $value
      * @return Payload
@@ -199,13 +210,13 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Get content availability.
+     * Is content mutable.
      *
      * @return bool|null
      */
-    public function isContentAvailable()
+    public function hasMutableContent()
     {
-        return $this->contentAvailable;
+        return $this->mutableContent;
     }
 
     /**

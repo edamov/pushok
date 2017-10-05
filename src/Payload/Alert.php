@@ -28,7 +28,6 @@ class Alert implements \JsonSerializable
     const ALERT_LOC_KEY = 'loc-key';
     const ALERT_LOC_ARGS_KEY = 'loc-args';
     const ALERT_LAUNCH_IMAGE_KEY = 'launch-image';
-    const ALERT_MUTABLE_CONTENT_KEY = 'mutable-content';
 
     /**
      * A short string describing the purpose of the notification.
@@ -92,13 +91,6 @@ class Alert implements \JsonSerializable
      * @var string
      */
     private $launchImage;
-
-    /**
-     * Access to modify the content of remote notifications before they are delivered to the user.
-     *
-     * @var bool
-     */
-    private $mutableContent;
 
     protected function __construct()
     {
@@ -317,30 +309,6 @@ class Alert implements \JsonSerializable
     }
 
     /**
-     * Set the mutable-content key for Notification Service Extensions on iOS10.
-     * @see http://bit.ly/mutable-content
-     *
-     * @param bool $value
-     * @return Alert
-     */
-    public function setMutableContent(bool $value): Alert
-    {
-        $this->mutableContent = $value;
-
-        return $this;
-    }
-
-    /**
-     * Is content mutable.
-     *
-     * @return bool|null
-     */
-    public function hasMutableContent()
-    {
-        return $this->mutableContent;
-    }
-
-    /**
      * Convert Alert to JSON.
      *
      * @return string
@@ -390,10 +358,6 @@ class Alert implements \JsonSerializable
 
         if (is_string($this->launchImage)) {
             $alert[self::ALERT_LAUNCH_IMAGE_KEY] = $this->launchImage;
-        }
-
-        if (is_bool($this->mutableContent)) {
-            $alert[self::ALERT_MUTABLE_CONTENT_KEY] = (int)$this->mutableContent;
         }
 
         return $alert;
