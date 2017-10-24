@@ -113,6 +113,13 @@ class Response implements ApnsResponseInterface
     private $apnsId;
 
     /**
+     * Device token.
+     *
+     * @var string|null
+     */
+    private $deviceToken;
+
+    /**
      * Response status code.
      *
      * @var int
@@ -182,6 +189,16 @@ class Response implements ApnsResponseInterface
     public function getApnsId()
     {
         return $this->apnsId;
+    }
+
+    /**
+     * Get device token
+     *
+     * @return string|null
+     */
+    public function getDeviceToken()
+    {
+        return $this->deviceToken;
     }
 
     /**
