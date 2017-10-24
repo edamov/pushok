@@ -90,10 +90,11 @@ class Client
                     $handle = $done['handle'];
 
                     $result = curl_multi_getcontent($handle);
+                    $token = curl_getinfo($handle, CURLINFO_PRIVATE);
 
                     list($headers, $body) = explode("\r\n\r\n", $result, 2);
                     $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                    $responseCollection[] = new Response($statusCode, $headers, $body);
+                    $responseCollection[] = new Response($statusCode, $headers, $body, $token);
                     curl_multi_remove_handle($mh, $handle);
                 }
             } while ($running);
