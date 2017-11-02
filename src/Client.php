@@ -74,32 +74,30 @@ class Client
 
             curl_setopt_array($ch, $request->getOptions());
             curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
-
-            curl_multi_add_handle($mh, $ch);
         }
 
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($mh, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-
-        while ($active && $mrc == CURLM_OK) {
-            if (curl_multi_select($mh) == -1) {
-                usleep(1);
+        $handleChunks = array_chunk($handles, 10);
+        foreach ($handleChunks as $handleChunk) {
+            foreach ($handleChunk as $handle) {
+                curl_multi_add_handle($mh, $handle);   
             }
+
+            $running = null;
             do {
-                $mrc = curl_multi_exec($mh, $active);
-            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        }
+                while(($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
 
-        $responseCollection = [];
-        foreach ($handles as $handle) {
-            curl_multi_remove_handle($mh, $handle);
-            $result = curl_multi_getcontent($handle);
+                while($done = curl_multi_info_read($mh)) {
+                    $handle = $done['handle'];
 
-            list($headers, $body) = explode("\r\n\r\n", $result, 2);
-            $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-            $responseCollection[] = new Response($statusCode, $headers, $body);
+                    $result = curl_multi_getcontent($handle);
+                    $token = curl_getinfo($handle, CURLINFO_PRIVATE);
+
+                    list($headers, $body) = explode("\r\n\r\n", $result, 2);
+                    $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+                    $responseCollection[] = new Response($statusCode, $headers, $body, $token);
+                    curl_multi_remove_handle($mh, $handle);
+                }
+            } while ($running);
         }
 
         curl_multi_close($mh);

@@ -113,6 +113,13 @@ class Response implements ApnsResponseInterface
     private $apnsId;
 
     /**
+     * Device token.
+     *
+     * @var string|null
+     */
+    private $deviceToken;
+
+    /**
      * Response status code.
      *
      * @var int
@@ -132,12 +139,14 @@ class Response implements ApnsResponseInterface
      * @param int $statusCode
      * @param string $headers
      * @param string $body
+     * @param string $deviceToken
      */
-    public function __construct(int $statusCode, string $headers, string $body)
+    public function __construct(int $statusCode, string $headers, string $body, string $deviceToken = null)
     {
         $this->statusCode = $statusCode;
         $this->apnsId = self::fetchApnsId($headers);
         $this->errorReason = self::fetchErrorReason($body);
+        $this->deviceToken = $deviceToken;
     }
 
     /**
@@ -182,6 +191,16 @@ class Response implements ApnsResponseInterface
     public function getApnsId()
     {
         return $this->apnsId;
+    }
+
+    /**
+     * Get device token
+     *
+     * @return string|null
+     */
+    public function getDeviceToken()
+    {
+        return $this->deviceToken;
     }
 
     /**
