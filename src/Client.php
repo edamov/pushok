@@ -39,11 +39,32 @@ class Client
     private $isProductionEnv;
 
     /**
-     * Number of concurrent requests to multiplex in the same connection
+     * Number of concurrent requests to multiplex in the same connection.
+     *
+     * @var int
+     */
+    private $nbConcurrentRequests = 20;
+
+    /**
+     * Number of maximum concurrent connections established to the APNS servers.
+     *
+     * @var int
+     */
+    private $maxConcurrentConnections = 1;
+
+    /**
+     * Flag to know if we should automatically close connections to the APNS servers or keep them alive.
      *
      * @var bool
      */
-    private $nbConcurrentRequests;
+    private $autoCloseConnections = true;
+
+    /**
+     * Current curl_multi handle instance.
+     *
+     * @var Object
+     */
+    private $curlMultiHandle;
 
     /**
      * Client constructor.
@@ -51,11 +72,10 @@ class Client
      * @param AuthProviderInterface $authProvider
      * @param bool $isProductionEnv
      */
-    public function __construct(AuthProviderInterface $authProvider, bool $isProductionEnv = false, int $nbConcurrentRequests = 10)
+    public function __construct(AuthProviderInterface $authProvider, bool $isProductionEnv = false)
     {
         $this->authProvider = $authProvider;
         $this->isProductionEnv = $isProductionEnv;
-        $this->nbConcurrentRequests = $nbConcurrentRequests;
     }
 
     /**
@@ -65,13 +85,18 @@ class Client
      */
     public function push(): array
     {
-        $mh = curl_multi_init();
+        if (!$this->curlMultiHandle) {
+            $this->curlMultiHandle = curl_multi_init();
 
-        if (!defined('CURLPIPE_MULTIPLEX')) {
-            define('CURLPIPE_MULTIPLEX', 2);
+            if (!defined('CURLPIPE_MULTIPLEX')) {
+                define('CURLPIPE_MULTIPLEX', 2);
+            }
+
+            curl_multi_setopt($this->curlMultiHandle, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
+            curl_multi_setopt($this->curlMultiHandle, CURLMOPT_MAX_HOST_CONNECTIONS, $this->maxConcurrentConnections);
         }
 
-        curl_multi_setopt($mh, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
+        $mh = $this->curlMultiHandle;
 
         $i = 0;
         while (!empty($this->notifications) && $i++ < $this->nbConcurrentRequests) {
@@ -98,6 +123,7 @@ class Client
                 $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
                 $responseCollection[] = new Response($statusCode, $headers, $body, $token);
                 curl_multi_remove_handle($mh, $handle);
+                curl_close($handle);
 
                 if (!empty($this->notifications)) {
                     $notification = array_pop($this->notifications);
@@ -106,11 +132,19 @@ class Client
             }
         } while ($running);
 
-        curl_multi_close($mh);
+        if ($this->autoCloseConnections) {
+            curl_multi_close($mh);
+            $this->curlMultiHandle = null;
+        }
 
         return $responseCollection;
     }
 
+    /**
+     * Prepares a curl handle from a Notification object.
+     *
+     * @param Notification $notification
+     */
     private function prepareHandle(Notification $notification)
     {
         $request = new Request($notification, $this->isProductionEnv);
@@ -161,5 +195,48 @@ class Client
     public function getNotifications(): array
     {
         return $this->notifications;
+    }
+
+    /**
+     * Close the current curl multi handle.
+     */
+    public function close()
+    {
+        if ($this->curlMultiHandle) {
+            curl_multi_close($this->curlMultiHandle);
+            $this->curlMultiHandle = null;
+        }
+    }
+
+    /**
+     * Set the number of concurrent requests sent through the multiplexed connections.
+     *
+     * @param int $nbConcurrentRequests
+     */
+    public function setNbConcurrentRequests($nbConcurrentRequests)
+    {
+        $this->nbConcurrentRequests = $nbConcurrentRequests;
+    }
+
+
+    /**
+     * Set the number of maximum concurrent connections established to the APNS servers.
+     *
+     * @param int $nbConcurrentRequests
+     */
+    public function setMaxConcurrentConnections($maxConcurrentConnections)
+    {
+        $this->maxConcurrentConnections = $maxConcurrentConnections;
+    }
+
+    /**
+     * Set wether or not the client should automatically close the connections. Apple recommends keeping
+     * connections open if you send more than a few notification per minutes.
+     *
+     * @param bool $nbConcurrentRequests
+     */
+    public function setAutoCloseConnections($autoCloseConnections)
+    {
+        $this->autoCloseConnections = $autoCloseConnections;
     }
 }
