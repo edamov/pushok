@@ -66,10 +66,10 @@ $alert = $alert->setBody('First push notification');
 $payload = Payload::create()->setAlert($alert);
 
 //set notification sound to default
-$payload = $payload->setSound('default');
+$payload->setSound('default');
 
 //add custom value to your notification, needs to be customized
-$payload = $payload->setCustomValue('key', 'value');
+$payload->setCustomValue('key', 'value');
 
 $deviceTokens = ['<device_token_1>', '<device_token_2>', '<device_token_3>'];
 
