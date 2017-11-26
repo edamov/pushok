@@ -39,6 +39,34 @@ class Client
     private $isProductionEnv;
 
     /**
+     * Number of concurrent requests to multiplex in the same connection.
+     *
+     * @var int
+     */
+    private $nbConcurrentRequests = 20;
+
+    /**
+     * Number of maximum concurrent connections established to the APNS servers.
+     *
+     * @var int
+     */
+    private $maxConcurrentConnections = 1;
+
+    /**
+     * Flag to know if we should automatically close connections to the APNS servers or keep them alive.
+     *
+     * @var bool
+     */
+    private $autoCloseConnections = true;
+
+    /**
+     * Current curl_multi handle instance.
+     *
+     * @var Object
+     */
+    private $curlMultiHandle;
+
+    /**
      * Client constructor.
      *
      * @param AuthProviderInterface $authProvider
@@ -57,52 +85,80 @@ class Client
      */
     public function push(): array
     {
-        $mh = curl_multi_init();
+        if (!$this->curlMultiHandle) {
+            $this->curlMultiHandle = curl_multi_init();
 
-        if (!defined('CURLPIPE_MULTIPLEX')) {
-            define('CURLPIPE_MULTIPLEX', 2);
-        }
-
-        curl_multi_setopt($mh, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
-
-        $handles = [];
-        foreach ($this->notifications as $k => $notification) {
-            $request = new Request($notification, $this->isProductionEnv);
-            $handles[] = $ch = curl_init();
-
-            $this->authProvider->authenticateClient($request);
-
-            curl_setopt_array($ch, $request->getOptions());
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
-        }
-
-        $handleChunks = array_chunk($handles, 10);
-        foreach ($handleChunks as $handleChunk) {
-            foreach ($handleChunk as $handle) {
-                curl_multi_add_handle($mh, $handle);   
+            if (!defined('CURLPIPE_MULTIPLEX')) {
+                define('CURLPIPE_MULTIPLEX', 2);
             }
 
-            $running = null;
-            do {
-                while(($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
-
-                while($done = curl_multi_info_read($mh)) {
-                    $handle = $done['handle'];
-
-                    $result = curl_multi_getcontent($handle);
-                    $token = curl_getinfo($handle, CURLINFO_PRIVATE);
-
-                    list($headers, $body) = explode("\r\n\r\n", $result, 2);
-                    $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                    $responseCollection[] = new Response($statusCode, $headers, $body, $token);
-                    curl_multi_remove_handle($mh, $handle);
-                }
-            } while ($running);
+            curl_multi_setopt($this->curlMultiHandle, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
+            curl_multi_setopt($this->curlMultiHandle, CURLMOPT_MAX_HOST_CONNECTIONS, $this->maxConcurrentConnections);
         }
 
-        curl_multi_close($mh);
+        $mh = $this->curlMultiHandle;
+
+        $i = 0;
+        while (!empty($this->notifications) && $i++ < $this->nbConcurrentRequests) {
+            $notification = array_pop($this->notifications);
+            curl_multi_add_handle($mh, $this->prepareHandle($notification));
+        }
+
+        do {
+            while (($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
+
+            if ($execrun != CURLM_OK) {
+                break;
+            }
+
+            while ($done = curl_multi_info_read($mh)) {
+                $handle = $done['handle'];
+
+                $result = curl_multi_getcontent($handle);
+
+                // find out which token the response is about
+                $token = curl_getinfo($handle, CURLINFO_PRIVATE);
+
+                list($headers, $body) = explode("\r\n\r\n", $result, 2);
+                $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+                $responseCollection[] = new Response($statusCode, $headers, $body, $token);
+                curl_multi_remove_handle($mh, $handle);
+                curl_close($handle);
+
+                if (!empty($this->notifications)) {
+                    $notification = array_pop($this->notifications);
+                    curl_multi_add_handle($mh, $this->prepareHandle($notification));
+                }
+            }
+        } while ($running);
+
+        if ($this->autoCloseConnections) {
+            curl_multi_close($mh);
+            $this->curlMultiHandle = null;
+        }
 
         return $responseCollection;
+    }
+
+    /**
+     * Prepares a curl handle from a Notification object.
+     *
+     * @param Notification $notification
+     */
+    private function prepareHandle(Notification $notification)
+    {
+        $request = new Request($notification, $this->isProductionEnv);
+        $ch = curl_init();
+
+        $this->authProvider->authenticateClient($request);
+
+        curl_setopt_array($ch, $request->getOptions());
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
+
+        // store device token to identify response
+        curl_setopt($ch, CURLOPT_PRIVATE, $notification->getDeviceToken());
+
+        return $ch;
     }
 
     /**
@@ -136,8 +192,51 @@ class Client
      *
      * @return Notification[]
      */
-    public function getNotifications()
+    public function getNotifications(): array
     {
         return $this->notifications;
+    }
+
+    /**
+     * Close the current curl multi handle.
+     */
+    public function close()
+    {
+        if ($this->curlMultiHandle) {
+            curl_multi_close($this->curlMultiHandle);
+            $this->curlMultiHandle = null;
+        }
+    }
+
+    /**
+     * Set the number of concurrent requests sent through the multiplexed connections.
+     *
+     * @param int $nbConcurrentRequests
+     */
+    public function setNbConcurrentRequests($nbConcurrentRequests)
+    {
+        $this->nbConcurrentRequests = $nbConcurrentRequests;
+    }
+
+
+    /**
+     * Set the number of maximum concurrent connections established to the APNS servers.
+     *
+     * @param int $nbConcurrentRequests
+     */
+    public function setMaxConcurrentConnections($maxConcurrentConnections)
+    {
+        $this->maxConcurrentConnections = $maxConcurrentConnections;
+    }
+
+    /**
+     * Set wether or not the client should automatically close the connections. Apple recommends keeping
+     * connections open if you send more than a few notification per minutes.
+     *
+     * @param bool $nbConcurrentRequests
+     */
+    public function setAutoCloseConnections($autoCloseConnections)
+    {
+        $this->autoCloseConnections = $autoCloseConnections;
     }
 }
