@@ -27,7 +27,7 @@
         "ext-gmp": "*",
         "ext-xml": "*",
         "ext-intl": "*",
-        "spomky-labs/jose": "^6.1.1"
+        "spomky-labs/jose": "^7.0.0"
     },
     "require-dev": {
         "ext-xdebug": "*",
