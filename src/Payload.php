@@ -348,7 +348,7 @@ class Payload implements \JsonSerializable
             $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_THREAD_ID_KEY] = $this->threadId;
         }
 
-        if (count($this->customValues)) {
+        if ($this->customValues && count($this->customValues)) {
             $payload = array_merge($payload, $this->customValues);
         }
 
