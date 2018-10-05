@@ -119,7 +119,16 @@ class Client
                 // find out which token the response is about
                 $token = curl_getinfo($handle, CURLINFO_PRIVATE);
 
-                list($headers, $body) = explode("\r\n\r\n", $result, 2);
+                $responseParts = explode("\r\n\r\n", $result, 2);
+                $headers = '';
+                $body = '';
+                if (isset($responseParts[0])) {
+                    $headers = $responseParts[0];
+                }
+                if (isset($responseParts[1])) {
+                    $body = $responseParts[1];
+                }
+                
                 $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
                 $responseCollection[] = new Response($statusCode, $headers, $body, $token);
                 curl_multi_remove_handle($mh, $handle);
