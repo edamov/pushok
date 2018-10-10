@@ -174,7 +174,7 @@ class Response implements ApnsResponseInterface
                 continue;
             }
 
-            return $middle[1];
+            return trim($middle[1]);
         }
 
         return '';
