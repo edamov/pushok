@@ -51,4 +51,11 @@ interface ApnsResponseInterface
      * @return string
      */
     public function getErrorDescription(): string;
+
+    /**
+     * Get timestamp for a status 410 error
+     *
+     * @return string
+     */
+    public function get410Timestamp(): string;
 }

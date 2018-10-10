@@ -50,4 +50,18 @@ class ResponseTest extends TestCase
 
         $this->assertEquals('The collapse identifier exceeds the maximum allowed size', $response->getErrorDescription());
     }
+
+    public function testGetError410Timestamp()
+    {
+        $response = new Response(410, 'headers', '{"reason": "Unregistered", "timestamp": 1514808000}');
+
+        $this->assertEquals('1514808000', $response->get410Timestamp());
+    }
+
+    public function testGetError410TimestampFailure()
+    {
+        $response = new Response(400, 'headers', '{"reason": "BadCollapseId"}');
+
+        $this->assertEquals('', $response->get410Timestamp());
+    }
 }
