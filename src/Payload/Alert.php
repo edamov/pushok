@@ -21,6 +21,7 @@ namespace Pushok\Payload;
 class Alert implements \JsonSerializable
 {
     const ALERT_TITLE_KEY = 'title';
+    const ALERT_SUBTITLE = 'subtitle';
     const ALERT_BODY_KEY = 'body';
     const ALERT_TITLE_LOC_KEY = 'loc-key';
     const ALERT_TITLE_LOC_ARGS_KEY = 'loc-args';
@@ -330,6 +331,10 @@ class Alert implements \JsonSerializable
 
         if (is_string($this->title)) {
             $alert[self::ALERT_TITLE_KEY] = $this->title;
+        }
+
+        if (is_string($this->subtitle)) {
+            $alert[self::ALERT_SUBTITLE] = $this->subtitle;
         }
 
         if (is_string($this->body)) {
