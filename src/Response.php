@@ -134,6 +134,13 @@ class Response implements ApnsResponseInterface
     private $errorReason;
 
     /**
+     * Timestamp for a 410 error
+     *
+     * @var string
+     */
+    private $error410Timestamp;
+
+    /**
      * Response constructor.
      *
      * @param int $statusCode
@@ -146,6 +153,7 @@ class Response implements ApnsResponseInterface
         $this->statusCode = $statusCode;
         $this->apnsId = self::fetchApnsId($headers);
         $this->errorReason = self::fetchErrorReason($body);
+        $this->error410Timestamp = self::fetch410Timestamp($statusCode, $body);
         $this->deviceToken = $deviceToken;
     }
 
@@ -166,7 +174,7 @@ class Response implements ApnsResponseInterface
                 continue;
             }
 
-            return $middle[1];
+            return trim($middle[1]);
         }
 
         return '';
@@ -181,6 +189,22 @@ class Response implements ApnsResponseInterface
     private static function fetchErrorReason(string $body): string
     {
         return json_decode($body, true)['reason'] ?: '';
+    }
+
+    /**
+     * Fetch timestamp for a 410 error.
+     * https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns#2947616
+     *
+     * @param int $statusCode
+     * @param string $body
+     * @return string
+     */
+    private static function fetch410Timestamp(int $statusCode, string $body): string
+    {
+        if($statusCode === 410) {
+            return (string)(json_decode($body, true)['timestamp'] ?: '');
+        }
+        return '';
     }
 
     /**
@@ -245,5 +269,15 @@ class Response implements ApnsResponseInterface
         }
 
         return '';
+    }
+
+    /**
+     * Get timestamp for a status 410 error
+     *
+     * @return string
+     */
+    public function get410Timestamp(): string
+    {
+        return $this->error410Timestamp;
     }
 }
