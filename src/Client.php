@@ -104,13 +104,28 @@ class Client
             curl_multi_add_handle($mh, $this->prepareHandle($notification));
         }
 
+        // Clear out curl handle buffer
         do {
-            while (($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
+            $execrun = curl_multi_exec($mh, $running);
+        } while ($execrun === CURLM_CALL_MULTI_PERFORM);
 
-            if ($execrun != CURLM_OK) {
-                break;
+        // Continue processing while we have active curl handles
+        while ($running > 0 && $execrun === CURLM_OK) {
+            // Block until data is available
+            $select_fd = curl_multi_select($mh);
+            // If select returns -1 while running, wait 1 millisecond before continuing
+            // Using curl_multi_timeout would be better but it isn't available in PHP yet
+            // https://php.net/manual/en/function.curl-multi-select.php#115381
+            if ($running && $select_fd === -1) {
+                usleep(250);
             }
 
+            // Continue to wait for more data if needed
+            do {
+                $execrun = curl_multi_exec($mh, $running);
+            } while ($execrun === CURLM_CALL_MULTI_PERFORM);
+
+            // Start reading results
             while ($done = curl_multi_info_read($mh)) {
                 $handle = $done['handle'];
 
@@ -128,7 +143,7 @@ class Client
                 if (isset($responseParts[1])) {
                     $body = $responseParts[1];
                 }
-                
+
                 $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
                 $responseCollection[] = new Response($statusCode, $headers, $body, $token);
                 curl_multi_remove_handle($mh, $handle);
@@ -139,7 +154,7 @@ class Client
                     curl_multi_add_handle($mh, $this->prepareHandle($notification));
                 }
             }
-        } while ($running);
+        }
 
         if ($this->autoCloseConnections) {
             curl_multi_close($mh);
