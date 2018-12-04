@@ -31,9 +31,9 @@
     },
     "require-dev": {
         "ext-xdebug": "*",
-        "phpunit/phpunit" : "~4.0||~5.0",
+        "phpunit/phpunit" : "~6.0 || ~7.0",
         "squizlabs/php_codesniffer": "^2.3",
-        "satooshi/php-coveralls": "^2.0"
+        "php-coveralls/php-coveralls": "^2.0"
     },
     "autoload": {
         "psr-4": {
