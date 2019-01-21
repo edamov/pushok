@@ -17,6 +17,7 @@ use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Algorithm\ES512;
+use Jose\Component\Signature\Serializer\CompactSerializer;
 use Pushok\AuthProviderInterface;
 use Pushok\Request;
 
@@ -200,12 +201,14 @@ class Token implements AuthProviderInterface
 
         $privateECKey = $this->generatePrivateECKey();
 
-        $this->token = $jwsBuilder
+        $jws = $jwsBuilder
             ->create()
             ->withPayload($payload)
             ->addSignature($privateECKey, $this->getProtectedHeader($privateECKey))
-            ->build()
-            ->getEncodedPayload();
+            ->build();
+
+        $serializer = new CompactSerializer($jsonConverter);
+        $this->token = $serializer->serialize($jws);
 
         return $this->token;
     }
