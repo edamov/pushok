@@ -11,9 +11,12 @@
 
 namespace Pushok\AuthProvider;
 
-use Jose\Factory\JWKFactory;
-use Jose\Factory\JWSFactory;
-use Jose\Object\JWKInterface;
+use Jose\Component\Core\JWK;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\Core\Converter\StandardConverter;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Algorithm\ES512;
 use Pushok\AuthProviderInterface;
 use Pushok\Request;
 
@@ -25,11 +28,6 @@ use Pushok\Request;
  */
 class Token implements AuthProviderInterface
 {
-    /**
-     * Hash alghorithm for generating auth token.
-     */
-    const HASH_ALGORITHM = 'ES256';
-
     /**
      * Generated auth token.
      *
@@ -147,13 +145,13 @@ class Token implements AuthProviderInterface
     /**
      * Generate private EC key.
      *
-     * @return JWKInterface
+     * @return JWK
      */
-    private function generatePrivateECKey(): JWKInterface
+    private function generatePrivateECKey(): JWK
     {
         return JWKFactory::createFromKeyFile($this->privateKeyPath, $this->privateKeySecret, [
             'kid' => $this->keyId,
-            'alg' => self::HASH_ALGORITHM,
+            'alg' => 'ES512',
             'use' => 'sig'
         ]);
     }
@@ -174,13 +172,13 @@ class Token implements AuthProviderInterface
     /**
      * Get protected header.
      *
-     * @param JWKInterface $privateECKey
+     * @param JWK $privateECKey
      * @return array
      */
-    private function getProtectedHeader(JWKInterface $privateECKey): array
+    private function getProtectedHeader(JWK $privateECKey): array
     {
         return [
-            'alg' => self::HASH_ALGORITHM,
+            'alg' => 'ES512',
             'kid' => $privateECKey->get('kid'),
         ];
     }
@@ -192,13 +190,22 @@ class Token implements AuthProviderInterface
      */
     private function generate(): string
     {
+        $jsonConverter = new StandardConverter();
+        $algorithmManager = AlgorithmManager::create([
+          new ES512(),
+        ]);
+
+        $jwsBuilder = new JWSBuilder($jsonConverter, $algorithmManager);
+        $payload = $jsonConverter->encode($this->getClaimsPayload());
+
         $privateECKey = $this->generatePrivateECKey();
 
-        $this->token = JWSFactory::createJWSToCompactJSON(
-            $this->getClaimsPayload(),
-            $privateECKey,
-            $this->getProtectedHeader($privateECKey)
-        );
+        $this->token = $jwsBuilder
+            ->create()
+            ->withPayload($payload)
+            ->addSignature($privateECKey, $this->getProtectedHeader($privateECKey))
+            ->build()
+            ->getEncodedPayload();
 
         return $this->token;
     }
