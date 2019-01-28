@@ -27,7 +27,8 @@
         "ext-gmp": "*",
         "ext-xml": "*",
         "ext-intl": "*",
-        "web-token/jwt-framework": "^1.3"
+        "web-token/jwt-signature-algorithm-ecdsa": "^1.3",
+        "web-token/jwt-key-mgmt": "^1.3"
     },
     "require-dev": {
         "ext-xdebug": "*",
