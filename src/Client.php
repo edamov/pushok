@@ -62,7 +62,7 @@ class Client
     /**
      * Current curl_multi handle instance.
      *
-     * @var Object
+     * @var resource
      */
     private $curlMultiHandle;
 
@@ -85,6 +85,8 @@ class Client
      */
     public function push(): array
     {
+        $responseCollection = [];
+
         if (!$this->curlMultiHandle) {
             $this->curlMultiHandle = curl_multi_init();
 
@@ -246,7 +248,7 @@ class Client
     /**
      * Set the number of maximum concurrent connections established to the APNS servers.
      *
-     * @param int $nbConcurrentRequests
+     * @param int $maxConcurrentConnections
      */
     public function setMaxConcurrentConnections($maxConcurrentConnections)
     {
@@ -254,10 +256,10 @@ class Client
     }
 
     /**
-     * Set wether or not the client should automatically close the connections. Apple recommends keeping
+     * Set if the client should automatically close the connections or not. Apple recommends keeping
      * connections open if you send more than a few notification per minutes.
      *
-     * @param bool $nbConcurrentRequests
+     * @param bool $autoCloseConnections
      */
     public function setAutoCloseConnections($autoCloseConnections)
     {
