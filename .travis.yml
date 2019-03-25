@@ -1,16 +1,23 @@
 language: php
+dist: xenial
 
 php:
+<<<<<<< HEAD
+  - 7.1
+  - 7.2
+  - 7.3
+=======
 - 7.1
+- 7.2
+- 7.3
+>>>>>>> fa00587... Update .travis.yml (#51)
 
-sudo: required
-
-services:
-- docker
-
-before_install:
-- docker pull edamov/pushok-docker
+before_script:
+  - composer install --no-interaction --prefer-dist
 
 script:
-- docker run --name=php7.1 -e TRAVIS=true -e TRAVIS_JOB_ID="${TRAVIS_JOB_ID}" -d -v /home/travis/build/edamov/pushok:/home/pushok edamov/pushok-docker tail -f /dev/null
-- docker exec -t php7.1 /bin/sh -c "cd /home/pushok && php /composer.phar update ${COMPOSER_FLAGS} --no-interaction --prefer-dist && /home/pushok/vendor/bin/phpunit --coverage-clover /home/pushok/build/logs/clover.xml && php /home/pushok/vendor/bin/php-coveralls -v"
+  - mkdir -p build/logs
+  - php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls -v
