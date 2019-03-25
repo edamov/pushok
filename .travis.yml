@@ -2,15 +2,9 @@ language: php
 dist: xenial
 
 php:
-<<<<<<< HEAD
   - 7.1
   - 7.2
   - 7.3
-=======
-- 7.1
-- 7.2
-- 7.3
->>>>>>> fa00587... Update .travis.yml (#51)
 
 before_script:
   - composer install --no-interaction --prefer-dist
