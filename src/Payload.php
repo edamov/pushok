@@ -37,7 +37,7 @@ class Payload implements \JsonSerializable
     /**
      * The notification settings for your app on the user’s device determine whether an alert or banner is displayed.
      *
-     * @var Alert
+     * @var Alert|string
      */
     private $alert;
 
@@ -106,12 +106,14 @@ class Payload implements \JsonSerializable
     /**
      * Set Alert.
      *
-     * @param Alert $alert
+     * @param Alert|string $alert
      * @return Payload
      */
-    public function setAlert(Alert $alert): Payload
+    public function setAlert($alert): Payload
     {
-        $this->alert = $alert;
+        if ($alert instanceof Alert || is_string($alert)) {
+            $this->alert = $alert;
+        }
 
         return $this;
     }
@@ -320,7 +322,7 @@ class Payload implements \JsonSerializable
     {
         $payload = self::getDefaultPayloadStructure();
 
-        if ($this->alert instanceof Alert) {
+        if ($this->alert instanceof Alert || is_string($this->alert)) {
             $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert;
         }
 

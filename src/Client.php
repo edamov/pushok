@@ -62,7 +62,7 @@ class Client
     /**
      * Current curl_multi handle instance.
      *
-     * @var Object
+     * @var resource
      */
     private $curlMultiHandle;
 
@@ -85,6 +85,8 @@ class Client
      */
     public function push(): array
     {
+        $responseCollection = [];
+
         if (!$this->curlMultiHandle) {
             $this->curlMultiHandle = curl_multi_init();
 
@@ -104,13 +106,28 @@ class Client
             curl_multi_add_handle($mh, $this->prepareHandle($notification));
         }
 
+        // Clear out curl handle buffer
         do {
-            while (($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM);
+            $execrun = curl_multi_exec($mh, $running);
+        } while ($execrun === CURLM_CALL_MULTI_PERFORM);
 
-            if ($execrun != CURLM_OK) {
-                break;
+        // Continue processing while we have active curl handles
+        while ($running > 0 && $execrun === CURLM_OK) {
+            // Block until data is available
+            $select_fd = curl_multi_select($mh);
+            // If select returns -1 while running, wait 250 microseconds before continuing
+            // Using curl_multi_timeout would be better but it isn't available in PHP yet
+            // https://php.net/manual/en/function.curl-multi-select.php#115381
+            if ($running && $select_fd === -1) {
+                usleep(250);
             }
 
+            // Continue to wait for more data if needed
+            do {
+                $execrun = curl_multi_exec($mh, $running);
+            } while ($execrun === CURLM_CALL_MULTI_PERFORM);
+
+            // Start reading results
             while ($done = curl_multi_info_read($mh)) {
                 $handle = $done['handle'];
 
@@ -119,7 +136,16 @@ class Client
                 // find out which token the response is about
                 $token = curl_getinfo($handle, CURLINFO_PRIVATE);
 
-                list($headers, $body) = explode("\r\n\r\n", $result, 2);
+                $responseParts = explode("\r\n\r\n", $result, 2);
+                $headers = '';
+                $body = '';
+                if (isset($responseParts[0])) {
+                    $headers = $responseParts[0];
+                }
+                if (isset($responseParts[1])) {
+                    $body = $responseParts[1];
+                }
+
                 $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
                 $responseCollection[] = new Response($statusCode, $headers, (string)$body, $token);
                 curl_multi_remove_handle($mh, $handle);
@@ -130,7 +156,7 @@ class Client
                     curl_multi_add_handle($mh, $this->prepareHandle($notification));
                 }
             }
-        } while ($running);
+        }
 
         if ($this->autoCloseConnections) {
             curl_multi_close($mh);
@@ -222,7 +248,7 @@ class Client
     /**
      * Set the number of maximum concurrent connections established to the APNS servers.
      *
-     * @param int $nbConcurrentRequests
+     * @param int $maxConcurrentConnections
      */
     public function setMaxConcurrentConnections($maxConcurrentConnections)
     {
@@ -230,10 +256,10 @@ class Client
     }
 
     /**
-     * Set wether or not the client should automatically close the connections. Apple recommends keeping
+     * Set if the client should automatically close the connections or not. Apple recommends keeping
      * connections open if you send more than a few notification per minutes.
      *
-     * @param bool $nbConcurrentRequests
+     * @param bool $autoCloseConnections
      */
     public function setAutoCloseConnections($autoCloseConnections)
     {
