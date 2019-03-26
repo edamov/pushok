@@ -341,6 +341,10 @@ class Alert implements \JsonSerializable
             $alert[self::ALERT_BODY_KEY] = $this->body;
         }
 
+        if (is_string($this->subtitle)) {
+            $alert[self::ALERT_TITLE_KEY] = $this->subtitle;
+        }
+
         if (is_string($this->titleLocKey)) {
             $alert[self::ALERT_TITLE_LOC_KEY] = $this->titleLocKey;
         }

@@ -147,7 +147,7 @@ class Client
                 }
 
                 $statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                $responseCollection[] = new Response($statusCode, $headers, $body, $token);
+                $responseCollection[] = new Response($statusCode, $headers, (string)$body, $token);
                 curl_multi_remove_handle($mh, $handle);
                 curl_close($handle);
 
