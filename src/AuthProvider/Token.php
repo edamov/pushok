@@ -39,9 +39,16 @@ class Token implements AuthProviderInterface
     /**
      * Path to p8 private key.
      *
-     * @var string
+     * @var string|null
      */
     private $privateKeyPath;
+
+    /**
+     * Private key data.
+     *
+     * @var string|null
+     */
+    private $privateKeyContent;
 
     /**
      * Private key secret.
@@ -78,6 +85,7 @@ class Token implements AuthProviderInterface
      * - team_id
      * - app_bundle_id
      * - private_key_path
+     * - private_key_content
      * - private_key_secret
      *
      * @param array $options
@@ -87,8 +95,9 @@ class Token implements AuthProviderInterface
         $this->keyId = $options['key_id'];
         $this->teamId = $options['team_id'];
         $this->appBundleId = $options['app_bundle_id'];
-        $this->privateKeyPath = $options['private_key_path'];
-        $this->privateKeySecret = $options['private_key_secret'] ?: null;
+        $this->privateKeyPath = $options['private_key_path'] ?? null;
+        $this->privateKeyContent = $options['private_key_content'] ?? null;
+        $this->privateKeySecret = $options['private_key_secret'] ?? null;
     }
 
     /**
@@ -150,7 +159,15 @@ class Token implements AuthProviderInterface
      */
     private function generatePrivateECKey(): JWK
     {
-        return JWKFactory::createFromKeyFile($this->privateKeyPath, $this->privateKeySecret, [
+        if ($this->privateKeyContent) {
+            $content = $this->privateKeyContent;
+        } elseif ($this->privateKeyPath) {
+            $content = \file_get_contents($this->privateKeyPath);
+        } else {
+            throw new \InvalidArgumentException('Unable to find private key.');
+        }
+
+        return JWKFactory::createFromKey($content, $this->privateKeySecret, [
             'kid' => $this->keyId,
             'alg' => 'ES512',
             'use' => 'sig'
