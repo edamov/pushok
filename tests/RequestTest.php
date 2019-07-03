@@ -47,6 +47,14 @@ class RequestTest extends TestCase
         $this->assertEquals(['Connection' => 'keep-alive'], $request->getHeaders());
     }
 
+    public function testGetOptions()
+    {
+        $request = new Request($this->createNotification(), $production = false);
+        $request->addOption('certificate_secret', 'secret');
+
+        $this->assertArrayHasKey('certificate_secret', $request->getOptions());
+    }
+
     private function createNotification()
     {
         return new Notification(Payload::create(), '123');

@@ -113,6 +113,37 @@ class Request
     }
 
     /**
+     * Add request option.
+     *
+     * @param string $key
+     * @param $value
+     */
+    public function addOption(string $key, $value)
+    {
+        $this->options[$key] = $value;
+    }
+
+    /**
+     * Add request options.
+     *
+     * @param array $options
+     */
+    public function addOptions(array $options)
+    {
+        $this->options = array_merge($this->options, $options);
+    }
+
+    /**
+     * Get request options.
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
      * Get decorated request headers.
      *
      * @return array
@@ -144,16 +175,6 @@ class Request
     public function getBody(): string
     {
         return $this->body;
-    }
-
-    /**
-     * Get request options.
-     *
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
     }
 
     /**
