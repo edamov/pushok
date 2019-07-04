@@ -130,7 +130,7 @@ class Request
      */
     public function addOptions(array $options)
     {
-        $this->options = array_merge($this->options, $options);
+        $this->options = array_replace($this->options, $options);
     }
 
     /**
