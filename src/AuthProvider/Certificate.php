@@ -37,6 +37,13 @@ class Certificate implements AuthProviderInterface
     private $certificateSecret;
 
     /**
+     * The bundle ID for app obtained from Apple developer account.
+     *
+     * @var string
+     */
+    private $appBundleId;
+
+    /**
      * This provider accepts the following options:
      *
      * - certificate_path
@@ -48,6 +55,7 @@ class Certificate implements AuthProviderInterface
     {
         $this->certificatePath   = $options['certificate_path'] ;
         $this->certificateSecret = $options['certificate_secret'];
+        $this->appBundleId       = $options['app_bundle_id'] ?? null;
     }
 
     /**
@@ -75,5 +83,8 @@ class Certificate implements AuthProviderInterface
                 CURLOPT_SSL_VERIFYPEER => true
             ]
         );
+        $request->addHeaders([
+            "apns-topic" => $this->appBundleId
+        ]);
     }
 }
