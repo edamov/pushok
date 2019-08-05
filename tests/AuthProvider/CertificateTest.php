@@ -26,4 +26,15 @@ class CertificateTest extends TestCase
 
         $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
     }
+
+    public function testCreatingCertificateAuthProviderWithAppBundleId()
+    {
+        $options = [];
+        $options['certificate_path'] = __DIR__ . '/../files/certificate.pem';
+        $options['certificate_secret'] = 'secret';
+        $options['appBundleId'] = 'com.apple.test';
+        $authProvider = AuthProvider\Certificate::create($options);
+
+        $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
+    }
 }
