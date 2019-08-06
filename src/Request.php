@@ -29,6 +29,7 @@ class Request
     const HEADER_APNS_PRIORITY = 'apns-priority';
     const HEADER_APNS_TOPIC = 'apns-topic';
     const HEADER_APNS_COLLAPSE_ID = 'apns-collapse-id';
+    const HEADER_APNS_PUSH_TYPE = 'apns-push-type';
 
     /**
      * Request headers.
@@ -227,10 +228,20 @@ class Request
 
         if (is_int($notification->getPriority())) {
             $this->headers[self::HEADER_APNS_PRIORITY] =  $notification->getPriority();
+        } else if ($notification->getPayload()->isContentAvailable()) {
+            $this->headers[self::HEADER_APNS_PRIORITY] = Notification::PRIORITY_LOW;
         }
 
         if (!empty($notification->getCollapseId())) {
             $this->headers[self::HEADER_APNS_COLLAPSE_ID ] = $notification->getCollapseId();
+        }
+        
+        // new header required to support iOS 13
+        
+        $this->headers[self::HEADER_APNS_PUSH_TYPE] = 'alert';
+        
+        if ($notification->getPayload()->isContentAvailable()) {
+            $this->headers[self::HEADER_APNS_PUSH_TYPE] = 'background';
         }
     }
 }
