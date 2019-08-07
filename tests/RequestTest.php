@@ -44,7 +44,7 @@ class RequestTest extends TestCase
         $request = new Request($this->createNotification(), $production = false);
         $request->addHeader('Connection', 'keep-alive');
 
-        $this->assertEquals(['Connection' => 'keep-alive'], $request->getHeaders());
+        $this->assertEquals(['Connection' => 'keep-alive', 'apns-push-type' => 'alert'], $request->getHeaders());
     }
 
     public function testGetOptions()
