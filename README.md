@@ -21,9 +21,6 @@ Pushok is a simple PHP library for sending push notifications to APNs.
 - [X] Uses concurrent requests to APNs
 - [X] Tested and working in APNs production environment
 - [ ] Supports Android notification
-- [ ] Create full documentation
-- [ ] Simplify library interface
-- [ ] Upgrade min required PHP version due to ending support of PHP 7.1
 
 ## Requirements
 
