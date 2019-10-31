@@ -309,7 +309,7 @@ class Payload implements \JsonSerializable
      */
     public function toJson(): string
     {
-        return json_encode($this, JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT);
+        return json_encode($this, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -323,31 +323,31 @@ class Payload implements \JsonSerializable
         $payload = self::getDefaultPayloadStructure();
 
         if ($this->alert instanceof Alert || is_string($this->alert)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_ALERT_KEY] = $this->alert;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
         }
 
         if (is_int($this->badge)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_BADGE_KEY] = $this->badge;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_BADGE_KEY} = $this->badge;
         }
 
         if (is_string($this->sound)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_SOUND_KEY] = $this->sound;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_SOUND_KEY} = $this->sound;
         }
 
         if (is_bool($this->contentAvailable)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_CONTENT_AVAILABLE_KEY] = (int)$this->contentAvailable;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_CONTENT_AVAILABLE_KEY} = (int)$this->contentAvailable;
         }
 
         if (is_bool($this->mutableContent)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_MUTABLE_CONTENT_KEY] = (int)$this->mutableContent;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_MUTABLE_CONTENT_KEY} = (int)$this->mutableContent;
         }
 
         if (is_string($this->category)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_CATEGORY_KEY] = $this->category;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_CATEGORY_KEY} = $this->category;
         }
 
         if (is_string($this->threadId)) {
-            $payload[self::PAYLOAD_ROOT_KEY][self::PAYLOAD_THREAD_ID_KEY] = $this->threadId;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_THREAD_ID_KEY} = $this->threadId;
         }
 
         if ((is_array($this->customValues) || $this->customValues instanceof Countable) && count($this->customValues)) {
@@ -364,6 +364,6 @@ class Payload implements \JsonSerializable
      */
     private static function getDefaultPayloadStructure()
     {
-        return [self::PAYLOAD_ROOT_KEY => []];
+        return [self::PAYLOAD_ROOT_KEY => new \stdClass];
     }
 }

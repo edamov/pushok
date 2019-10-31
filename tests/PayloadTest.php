@@ -76,8 +76,8 @@ class PayloadTest extends TestCase
 
     public function testConvertToJSon()
     {
-        $alert = Alert::create()->setTitle('title');
 
+        $alert = Alert::create()->setTitle('title');
         $payload = Payload::create()
             ->setAlert($alert)
             ->setBadge(1)
@@ -93,5 +93,15 @@ class PayloadTest extends TestCase
             ' "thread-id": "tread-id", "mutable-content": 1, "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );
+
+    }
+
+    public function testSetCustomArrayType() {
+        $alert = Alert::create()->setTitle('title');
+        $payload = Payload::create()
+            ->setAlert($alert)
+            ->setCustomValue('array', array(1,2,3));
+
+        $this->assertEquals(gettype(json_decode($payload->toJson())->array), 'array');
     }
 }
