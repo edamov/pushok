@@ -24,7 +24,7 @@
         "lib-curl": ">=7.46.0",
         "ext-openssl": "*",
         "lib-openssl": ">=1.0.2.5",
-        "ext-gmp": "*",
+        "ext-json": "*",
         "ext-xml": "*",
         "ext-intl": "*",
         "web-token/jwt-signature-algorithm-ecdsa": "^1.3",
