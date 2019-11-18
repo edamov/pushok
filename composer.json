@@ -27,15 +27,14 @@
         "ext-json": "*",
         "ext-xml": "*",
         "ext-intl": "*",
-        "ext-json": "*",
         "web-token/jwt-signature-algorithm-ecdsa": "^2.0",
         "web-token/jwt-key-mgmt": "^2.0"
     },
     "require-dev": {
         "ext-xdebug": "*",
-        "phpunit/phpunit" : "~7.5",
-        "squizlabs/php_codesniffer": "^3.4",
-        "php-coveralls/php-coveralls": "^2.0"
+        "php-coveralls/php-coveralls": "^2.0",
+        "phpunit/phpunit": "^8.4",
+        "squizlabs/php_codesniffer": "^3.4"
     },
     "autoload": {
         "psr-4": {
@@ -60,6 +59,9 @@
         "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "7.2"
+        }
     }
 }
