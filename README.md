@@ -8,8 +8,6 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Software License][ico-license]](LICENSE.md)
 
-> **Note:** This library is under development
-
 Pushok is a simple PHP library for sending push notifications to APNs. 
 
 ## Features
@@ -20,7 +18,6 @@ Pushok is a simple PHP library for sending push notifications to APNs.
 - [X] Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
 - [X] Uses concurrent requests to APNs
 - [X] Tested and working in APNs production environment
-- [ ] Supports Android notification
 
 ## Requirements
 
