@@ -201,7 +201,7 @@ class Response implements ApnsResponseInterface
      */
     private static function fetch410Timestamp(int $statusCode, string $body): string
     {
-        if($statusCode === 410) {
+        if ($statusCode === 410) {
             return (string)(json_decode($body, true)['timestamp'] ?: '');
         }
         return '';

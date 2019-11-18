@@ -14,7 +14,6 @@ namespace Pushok\AuthProvider;
 use Jose\Component\Core\JWK;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Core\AlgorithmManager;
-use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Algorithm\ES512;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -208,13 +207,12 @@ class Token implements AuthProviderInterface
      */
     private function generate(): string
     {
-        $jsonConverter = new StandardConverter();
-        $algorithmManager = AlgorithmManager::create([
+        $algorithmManager = new AlgorithmManager([
           new ES512(),
         ]);
 
-        $jwsBuilder = new JWSBuilder($jsonConverter, $algorithmManager);
-        $payload = $jsonConverter->encode($this->getClaimsPayload());
+        $jwsBuilder = new JWSBuilder($algorithmManager);
+        $payload = json_encode($this->getClaimsPayload(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         $privateECKey = $this->generatePrivateECKey();
 
@@ -224,7 +222,7 @@ class Token implements AuthProviderInterface
             ->addSignature($privateECKey, $this->getProtectedHeader($privateECKey))
             ->build();
 
-        $serializer = new CompactSerializer($jsonConverter);
+        $serializer = new CompactSerializer();
         $this->token = $serializer->serialize($jws);
 
         return $this->token;

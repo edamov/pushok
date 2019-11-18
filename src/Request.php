@@ -228,7 +228,7 @@ class Request
 
         if (is_int($notification->getPriority())) {
             $this->headers[self::HEADER_APNS_PRIORITY] =  $notification->getPriority();
-        } else if ($notification->getPayload()->isContentAvailable()) {
+        } elseif ($notification->getPayload()->isContentAvailable()) {
             $this->headers[self::HEADER_APNS_PRIORITY] = Notification::PRIORITY_LOW;
         }
 

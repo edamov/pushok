@@ -11,13 +11,23 @@
 
 namespace Pushok;
 
+use Countable;
 use Pushok\Payload\Alert;
+
+// Polyfill for PHP 7.2
+if (!function_exists('is_countable')) {
+    function is_countable($var)
+    {
+        return (is_array($var) || $var instanceof Countable);
+    }
+}
 
 /**
  * Class Payload
+ *
  * @package Pushok
  *
- * @see http://bit.ly/payload-key-reference
+ * @see     http://bit.ly/payload-key-reference
  */
 class Payload implements \JsonSerializable
 {
@@ -104,21 +114,6 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set Alert.
-     *
-     * @param Alert|string $alert
-     * @return Payload
-     */
-    public function setAlert($alert): Payload
-    {
-        if ($alert instanceof Alert || is_string($alert)) {
-            $this->alert = $alert;
-        }
-
-        return $this;
-    }
-
-    /**
      * Get Alert.
      *
      * @return Alert|null
@@ -129,14 +124,17 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set badge.
+     * Set Alert.
      *
-     * @param int $value
+     * @param Alert|string $alert
+     *
      * @return Payload
      */
-    public function setBadge(int $value): Payload
+    public function setAlert($alert): Payload
     {
-        $this->badge = $value;
+        if ($alert instanceof Alert || is_string($alert)) {
+            $this->alert = $alert;
+        }
 
         return $this;
     }
@@ -152,14 +150,15 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set sound.
+     * Set badge.
      *
-     * @param string $value
+     * @param int $value
+     *
      * @return Payload
      */
-    public function setSound(string $value): Payload
+    public function setBadge(int $value): Payload
     {
-        $this->sound = $value;
+        $this->badge = $value;
 
         return $this;
     }
@@ -175,9 +174,24 @@ class Payload implements \JsonSerializable
     }
 
     /**
+     * Set sound.
+     *
+     * @param string $value
+     *
+     * @return Payload
+     */
+    public function setSound(string $value): Payload
+    {
+        $this->sound = $value;
+
+        return $this;
+    }
+
+    /**
      * Set content availability.
      *
      * @param bool $value
+     *
      * @return Payload
      */
     public function setContentAvailability(bool $value): Payload
@@ -199,9 +213,11 @@ class Payload implements \JsonSerializable
 
     /**
      * Set the mutable-content key for Notification Service Extensions on iOS10.
+     *
      * @see http://bit.ly/mutable-content
      *
      * @param bool $value
+     *
      * @return Payload
      */
     public function setMutableContent(bool $value): Payload
@@ -222,19 +238,6 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set category.
-     *
-     * @param string $value
-     * @return Payload
-     */
-    public function setCategory(string $value): Payload
-    {
-        $this->category = $value;
-
-        return $this;
-    }
-
-    /**
      * Get category.
      *
      * @return string|null
@@ -245,14 +248,15 @@ class Payload implements \JsonSerializable
     }
 
     /**
-     * Set thread-id.
+     * Set category.
      *
      * @param string $value
+     *
      * @return Payload
      */
-    public function setThreadId(string $value): Payload
+    public function setCategory(string $value): Payload
     {
-        $this->threadId = $value;
+        $this->category = $value;
 
         return $this;
     }
@@ -268,10 +272,25 @@ class Payload implements \JsonSerializable
     }
 
     /**
+     * Set thread-id.
+     *
+     * @param string $value
+     *
+     * @return Payload
+     */
+    public function setThreadId(string $value): Payload
+    {
+        $this->threadId = $value;
+
+        return $this;
+    }
+
+    /**
      * Set custom value for Payload.
      *
      * @param string $key
      * @param mixed $value
+     *
      * @return Payload
      * @throws InvalidPayloadException
      */
@@ -290,6 +309,7 @@ class Payload implements \JsonSerializable
      * Get custom value.
      *
      * @param $key
+     *
      * @return mixed
      * @throws InvalidPayloadException
      */
@@ -350,7 +370,7 @@ class Payload implements \JsonSerializable
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_THREAD_ID_KEY} = $this->threadId;
         }
 
-        if ((is_array($this->customValues) || $this->customValues instanceof Countable) && count($this->customValues)) {
+        if (is_countable($this->customValues) && count($this->customValues)) {
             $payload = array_merge($payload, $this->customValues);
         }
 
