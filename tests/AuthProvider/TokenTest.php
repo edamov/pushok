@@ -27,14 +27,23 @@ class TokenTest extends TestCase
         $this->assertTrue(is_string($authProvider->get()));
     }
 
+    private function getOptions()
+    {
+        return [
+            'key_id' => '1234567890',
+            'team_id' => '1234567890',
+            'app_bundle_id' => 'com.app.Test',
+        ];
+    }
+
     public function testCreatingTokenAuthProviderWithKeyContent()
     {
         $options = $this->getOptions();
-        $options['private_key_content'] = <<<EOT
------BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg13n3isfsEktzl+CtH5ECpRrKk+40prVuCbldkP77gamgCgYIKoZIzj0DAQehRANCAARhwgxSRqXBt54BWRQXoU/doFWULOWrER3uLS43/iugDW1PMDliQZEzWetYAdf+Mafq/PrlbEAfA+l7JfmijAsv
------END PRIVATE KEY-----
-EOT;
+
+        $options['private_key_content'] = file_get_contents(
+            implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'files', 'private_key.p8'])
+        );
+
         $authProvider = AuthProvider\Token::create($options);
 
         $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
@@ -59,14 +68,5 @@ EOT;
 
         $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
         $this->assertEquals($token, $authProvider->get());
-    }
-
-    private function getOptions()
-    {
-        return [
-            'key_id' => '1234567890',
-            'team_id' => '1234567890',
-            'app_bundle_id' => 'com.app.Test',
-        ];
     }
 }

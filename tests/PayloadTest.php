@@ -93,10 +93,10 @@ class PayloadTest extends TestCase
             ' "thread-id": "tread-id", "mutable-content": 1, "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );
-
     }
 
-    public function testSetCustomArrayType() {
+    public function testSetCustomArrayType()
+    {
         $alert = Alert::create()->setTitle('title');
         $payload = Payload::create()
             ->setAlert($alert)
