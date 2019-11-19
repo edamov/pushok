@@ -188,7 +188,7 @@ class Response implements ApnsResponseInterface
      */
     private static function fetchErrorReason(string $body): string
     {
-        return json_decode($body, true)['reason'] ?: '';
+        return json_decode($body, true)['reason'] ?? '';
     }
 
     /**
@@ -202,7 +202,7 @@ class Response implements ApnsResponseInterface
     private static function fetch410Timestamp(int $statusCode, string $body): string
     {
         if ($statusCode === 410) {
-            return (string)(json_decode($body, true)['timestamp'] ?: '');
+            return (string)(json_decode($body, true)['timestamp'] ?? '');
         }
         return '';
     }
@@ -244,7 +244,7 @@ class Response implements ApnsResponseInterface
      */
     public function getReasonPhrase(): string
     {
-        return self::$reasonPhrases[$this->statusCode] ?: '';
+        return self::$reasonPhrases[$this->statusCode] ?? '';
     }
 
     /**

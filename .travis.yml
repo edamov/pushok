@@ -1,12 +1,24 @@
 language: php
-dist: xenial
+dist: bionic
+os: linux
 
 php:
   - 7.2
   - 7.3
 
+jobs:
+  include:
+    - php: 7.4snapshot
+      before_install:
+        - pecl install xdebug
+    - php: nightly
+  allow_failures:
+    - php: 7.4snapshot
+    - php: nightly
+
+# Make sure all dev dependencies are installed, ignore platform requirements because Travis is missing the xdebug on some images
 before_script:
-  - composer install --no-interaction --prefer-dist
+  - composer install --no-interaction --prefer-dist --ignore-platform-reqs
 
 script:
   - mkdir -p build/logs
