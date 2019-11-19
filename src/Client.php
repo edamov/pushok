@@ -170,6 +170,8 @@ class Client
      * Prepares a curl handle from a Notification object.
      *
      * @param Notification $notification
+     *
+     * @return resource Curl resource
      */
     private function prepareHandle(Notification $notification)
     {
@@ -188,16 +190,6 @@ class Client
     }
 
     /**
-     * Add notification in queue for sending.
-     *
-     * @param Notification $notification
-     */
-    public function addNotification(Notification $notification)
-    {
-        $this->notifications[] = $notification;
-    }
-
-    /**
      * Add several notifications in queue for sending.
      *
      * @param Notification[] $notifications
@@ -211,6 +203,16 @@ class Client
 
             $this->addNotification($notification);
         }
+    }
+
+    /**
+     * Add notification in queue for sending.
+     *
+     * @param Notification $notification
+     */
+    public function addNotification(Notification $notification)
+    {
+        $this->notifications[] = $notification;
     }
 
     /**
