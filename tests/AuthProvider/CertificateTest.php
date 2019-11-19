@@ -12,8 +12,10 @@
 namespace Pushok\AuthProvider;
 
 use PHPUnit\Framework\TestCase;
-use Pushok\AuthProvider;
 use Pushok\AuthProviderInterface;
+use Pushok\Notification;
+use Pushok\Payload;
+use Pushok\Request;
 
 class CertificateTest extends TestCase
 {
@@ -22,7 +24,7 @@ class CertificateTest extends TestCase
         $options = [];
         $options['certificate_path'] = __DIR__ . '/../files/certificate.pem';
         $options['certificate_secret'] = 'secret';
-        $authProvider = AuthProvider\Certificate::create($options);
+        $authProvider = Certificate::create($options);
 
         $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
     }
@@ -32,9 +34,24 @@ class CertificateTest extends TestCase
         $options = [];
         $options['certificate_path'] = __DIR__ . '/../files/certificate.pem';
         $options['certificate_secret'] = 'secret';
-        $options['appBundleId'] = 'com.apple.test';
-        $authProvider = AuthProvider\Certificate::create($options);
+        $options['app_bundle_id'] = 'com.apple.test';
+        $authProvider = Certificate::create($options);
 
-        $this->assertInstanceOf(AuthProviderInterface::class, $authProvider);
+        $request = $this->createRequest();
+        $authProvider->authenticateClient($request);
+
+        $this->assertSame($request->getOptions()[CURLOPT_SSLCERT], $options['certificate_path']);
+        $this->assertSame($request->getOptions()[CURLOPT_SSLCERTPASSWD], $options['certificate_secret']);
+        $this->assertSame($request->getOptions()[CURLOPT_SSLCERTPASSWD], $options['certificate_secret']);
+
+        $this->assertSame($request->getHeaders()["apns-topic"], $options['app_bundle_id']);
+    }
+
+    private function createRequest(): Request
+    {
+        $notification = new Notification(Payload::create(), '123');
+        $request = new Request($notification, $production = false);
+
+        return $request;
     }
 }

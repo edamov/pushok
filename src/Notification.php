@@ -11,6 +11,8 @@
 
 namespace Pushok;
 
+use DateTime;
+
 /**
  * Class Notification
  * @package Pushok
@@ -44,7 +46,7 @@ class Notification
     /**
      * This value identifies the date when the notification is no longer valid and can be discarded.
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $expirationAt;
 
@@ -120,9 +122,9 @@ class Notification
     /**
      * Get expiration DateTime.
      *
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getExpirationAt()
+    public function getExpirationAt(): ?DateTime
     {
         return $this->expirationAt;
     }
@@ -130,12 +132,12 @@ class Notification
     /**
      * Set expiration DateTime.
      *
-     * @param \DateTime $expirationAt
+     * @param DateTime $expirationAt
      * @return Notification
      */
-    public function setExpirationAt(\DateTime $expirationAt): Notification
+    public function setExpirationAt(DateTime $expirationAt): Notification
     {
-        $this->expirationAt = $expirationAt;
+        $this->expirationAt = clone $expirationAt;
 
         return $this;
     }
