@@ -101,6 +101,15 @@ class Payload implements \JsonSerializable
      */
     private $customValues;
 
+    /**
+     * Push notification type
+     *
+     * https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns#2947607
+     *
+     * @var string
+     */
+    private $pushType;
+
     protected function __construct()
     {
     }
@@ -320,6 +329,27 @@ class Payload implements \JsonSerializable
         }
 
         return $this->customValues[$key];
+    }
+
+    /**
+     * Set push type for Payload.
+     *
+     * @param string $pushType
+     * @return Payload
+     */
+    public function setPushType($pushType) {
+        $this->pushType = $pushType;
+
+        return $this;
+    }
+
+    /**
+     * Get push type for Payload.
+     *
+     * @return string
+     */
+    public function getPushType() {
+        return $this->pushType;
     }
 
     /**
