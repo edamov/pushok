@@ -235,13 +235,14 @@ class Request
         if (!empty($notification->getCollapseId())) {
             $this->headers[self::HEADER_APNS_COLLAPSE_ID ] = $notification->getCollapseId();
         }
-        
-        // new header required to support iOS 13
-        
-        $this->headers[self::HEADER_APNS_PUSH_TYPE] = 'alert';
-        
-        if ($notification->getPayload()->isContentAvailable()) {
+        // if the push type was set when the payload was created then it will set that as a push type,
+        // otherwise we would do our best in order to guess what push type is.
+        if (!empty($notification->getPayload()->getPushType())) {
+            $this->headers[self::HEADER_APNS_PUSH_TYPE] = $notification->getPayload()->getPushType();
+        } else if ($notification->getPayload()->isContentAvailable()) {
             $this->headers[self::HEADER_APNS_PUSH_TYPE] = 'background';
+        } else {
+            $this->headers[self::HEADER_APNS_PUSH_TYPE] = 'alert';
         }
     }
 }
