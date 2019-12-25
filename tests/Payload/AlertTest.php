@@ -85,7 +85,7 @@ class AlertTest extends TestCase
             ->setLaunchImage('launch-image');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"title":"title","body":"body","title-loc-key":"title-loc-key","loc-args":["loc-arg"],' .
+            '{"title":"title","body":"body","title-loc-key":"title-loc-key","title-loc-args":["loc-arg"],' .
             '"action-loc-key":"action-loc-key","loc-key":"loc-key","loc-args":["loc-arg"],' .
             '"launch-image":"launch-image"}',
             $alert->toJson()
