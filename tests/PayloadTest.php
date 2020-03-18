@@ -12,6 +12,7 @@
 namespace Pushok\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Pushok\InvalidPayloadException;
 use Pushok\Payload;
 use Pushok\Payload\Alert;
 
@@ -72,6 +73,31 @@ class PayloadTest extends TestCase
         $payload = Payload::create()->setCustomValue('key', 'value');
 
         $this->assertEquals('value', $payload->getCustomValue('key'));
+    }
+
+    public function testSetCustomValueToRootKey()
+    {
+        $this->expectException(InvalidPayloadException::class);
+        $this->expectExceptionMessage("Key aps is reserved and can't be used for custom property.");
+
+        Payload::create()->setCustomValue('aps', 'value');
+    }
+
+    public function testGetCustomValueOfNotExistingKey()
+    {
+        $this->expectException(InvalidPayloadException::class);
+        $this->expectExceptionMessage("Custom value with key 'notExistingKey' doesn't exist.");
+
+        Payload::create()
+            ->setCustomValue('something', 'value')
+            ->getCustomValue('notExistingKey', 'value');
+    }
+
+    public function testSetPushType()
+    {
+        $payload = Payload::create()->setPushType('pushType');
+
+        $this->assertEquals('pushType', $payload->getPushType());
     }
 
     public function testConvertToJSon()

@@ -23,6 +23,13 @@ class AlertTest extends TestCase
         $this->assertEquals('title', $alert->getTitle());
     }
 
+    public function testSetSubtitle()
+    {
+        $alert = Alert::create()->setSubtitle('subtitle');
+
+        $this->assertEquals('subtitle', $alert->getSubtitle());
+    }
+
     public function testSetBody()
     {
         $alert = Alert::create()->setBody('body');
@@ -76,6 +83,7 @@ class AlertTest extends TestCase
     {
         $alert = Alert::create()
             ->setTitle('title')
+            ->setSubtitle('subtitle')
             ->setBody('body')
             ->setTitleLocKey('title-loc-key')
             ->setTitleLocArgs(['loc-arg'])
@@ -85,9 +93,9 @@ class AlertTest extends TestCase
             ->setLaunchImage('launch-image');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"title":"title","body":"body","title-loc-key":"title-loc-key","title-loc-args":["loc-arg"],' .
-            '"action-loc-key":"action-loc-key","loc-key":"loc-key","loc-args":["loc-arg"],' .
-            '"launch-image":"launch-image"}',
+            '{"title":"title","subtitle":"subtitle","body":"body","title-loc-key":"title-loc-key",' .
+            '"title-loc-args":["loc-arg"],"action-loc-key":"action-loc-key","loc-key":"loc-key",' .
+            '"loc-args":["loc-arg"],"launch-image":"launch-image"}',
             $alert->toJson()
         );
     }
