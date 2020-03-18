@@ -30,6 +30,13 @@ class ResponseTest extends TestCase
         $this->assertEquals('123', $response->getApnsId());
     }
 
+    public function testGetDeviceToken()
+    {
+        $response = new Response(200, 'headers', 'body', 'token');
+
+        $this->assertEquals('token', $response->getDeviceToken());
+    }
+
     public function testGetReasonPhrase()
     {
         $response = new Response(200, 'headers', 'body');
@@ -52,6 +59,13 @@ class ResponseTest extends TestCase
             'The collapse identifier exceeds the maximum allowed size',
             $response->getErrorDescription()
         );
+    }
+
+    public function testGetErrorDescriptionForUnknownReason()
+    {
+        $response = new Response(400, 'headers', '{"reason": "UnknownReason"}');
+
+        $this->assertEquals('', $response->getErrorDescription());
     }
 
     public function testGetError410Timestamp()
