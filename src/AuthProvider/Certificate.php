@@ -105,7 +105,7 @@ class Certificate implements AuthProviderInterface
                 return $this->appBundleId = '.complication';
                 break;
 
-            case 'complication':
+            case 'fileprovider':
                 return $this->appBundleId = '.pushkit.fileprovider';
                 break;
 
