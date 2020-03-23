@@ -99,19 +99,15 @@ class Certificate implements AuthProviderInterface
         switch ($pushType) {
             case 'voip':
                 return $this->appBundleId . '.voip';
-                break;
 
             case 'complication':
                 return $this->appBundleId . '.complication';
-                break;
 
             case 'fileprovider':
                 return $this->appBundleId . '.pushkit.fileprovider';
-                break;
 
             default:
                 return $this->appBundleId;
-                break;
         }
     }
 }
