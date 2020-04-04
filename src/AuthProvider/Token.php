@@ -136,9 +136,32 @@ class Token implements AuthProviderInterface
     public function authenticateClient(Request $request)
     {
         $request->addHeaders([
-            "apns-topic" => $this->appBundleId,
-            'Authorization' => 'bearer ' . $this->token
+            'apns-topic' => $this->generateApnsTopic($request->getHeaders()['apns-push-type']),
+            'Authorization' => 'bearer ' . $this->token,
         ]);
+    }
+
+    /**
+     * Generate a correct apns-topic string
+     *
+     * @param string $pushType
+     * @return string
+     */
+    public function generateApnsTopic(string $pushType)
+    {
+        switch ($pushType) {
+            case 'voip':
+                return $this->appBundleId . '.voip';
+
+            case 'complication':
+                return $this->appBundleId . '.complication';
+
+            case 'fileprovider':
+                return $this->appBundleId . '.pushkit.fileprovider';
+
+            default:
+                return $this->appBundleId;
+        }
     }
 
     /**
