@@ -154,6 +154,7 @@ class Client
                 if (!empty($this->notifications)) {
                     $notification = array_pop($this->notifications);
                     curl_multi_add_handle($mh, $this->prepareHandle($notification));
+                    $running++;
                 }
             }
         }
