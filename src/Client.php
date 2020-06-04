@@ -94,12 +94,10 @@ class Client
                 define('CURLPIPE_MULTIPLEX', 2);
             }
 
-            if (!defined('CURLMOPT_MAX_HOST_CONNECTIONS')) {
-                define('CURLMOPT_MAX_HOST_CONNECTIONS', 7);
-            }
-
             curl_multi_setopt($this->curlMultiHandle, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
-            curl_multi_setopt($this->curlMultiHandle, CURLMOPT_MAX_HOST_CONNECTIONS, $this->maxConcurrentConnections);
+            if (defined('CURLMOPT_MAX_HOST_CONNECTIONS')) {
+                curl_multi_setopt($this->curlMultiHandle, CURLMOPT_MAX_HOST_CONNECTIONS, $this->maxConcurrentConnections);
+            }
         }
 
         $mh = $this->curlMultiHandle;
