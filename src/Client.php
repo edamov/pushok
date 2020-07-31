@@ -191,7 +191,7 @@ class Client
 
         $this->authProvider->authenticateClient($request);
 
-        curl_setopt_array($ch, array_merge($this->curlOptions, $request->getOptions()));
+        curl_setopt_array($ch, $this->curlOptions + $request->getOptions());
         curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
 
         // store device token to identify response
