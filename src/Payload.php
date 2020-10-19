@@ -39,6 +39,7 @@ class Payload implements \JsonSerializable
     const PAYLOAD_MUTABLE_CONTENT_KEY = 'mutable-content';
     const PAYLOAD_CATEGORY_KEY = 'category';
     const PAYLOAD_THREAD_ID_KEY = 'thread-id';
+    const PAYLOAD_URL_ARGS_KEY = 'url-args';
 
     const PAYLOAD_HTTP2_REGULAR_NOTIFICATION_MAXIMUM_SIZE = 4096;
     const PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE = 5120;
@@ -93,6 +94,13 @@ class Payload implements \JsonSerializable
      * @var string
      */
     private $threadId;
+
+    /**
+     * Provide this key with an array value that represents the url-args for Safari notifications.
+     *
+     * @var string
+     */
+    private $urlArgs;
 
     /**
      * Payload custom values.
@@ -295,6 +303,30 @@ class Payload implements \JsonSerializable
     }
 
     /**
+     * Get url-args.
+     *
+     * @return string|null
+     */
+    public function getUrlArgs()
+    {
+        return $this->urlArgs;
+    }
+
+    /**
+     * Set url-args.
+     *
+     * @param array $value
+     *
+     * @return Payload
+     */
+    public function setUrlArgs(array $value): Payload
+    {
+        $this->urlArgs = $value;
+
+        return $this;
+    }
+
+    /**
      * Set custom value for Payload.
      *
      * @param string $key
@@ -398,6 +430,10 @@ class Payload implements \JsonSerializable
 
         if (is_string($this->threadId)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_THREAD_ID_KEY} = $this->threadId;
+        }
+
+        if (is_array($this->urlArgs)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_URL_ARGS_KEY} = $this->urlArgs;
         }
 
         if (is_countable($this->customValues) && count($this->customValues)) {
