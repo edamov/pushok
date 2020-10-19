@@ -305,7 +305,7 @@ class Payload implements \JsonSerializable
     /**
      * Get url-args.
      *
-     * @return string|null
+     * @return array|null
      */
     public function getUrlArgs()
     {
