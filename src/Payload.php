@@ -13,6 +13,7 @@ namespace Pushok;
 
 use Countable;
 use Pushok\Payload\Alert;
+use Pushok\Payload\Sound;
 
 // Polyfill for PHP 7.2
 if (!function_exists('is_countable')) {
@@ -62,7 +63,7 @@ class Payload implements \JsonSerializable
     /**
      * The name of a sound file in the app bundle or in the Library/Sounds folder of the app’s data container.
      *
-     * @var string
+     * @var Sound|string
      */
     private $sound;
 
@@ -185,13 +186,15 @@ class Payload implements \JsonSerializable
     /**
      * Set sound.
      *
-     * @param string $value
+     * @param Sound|string $sound
      *
      * @return Payload
      */
-    public function setSound(string $value): Payload
+    public function setSound($sound): Payload
     {
-        $this->sound = $value;
+        if ($sound instanceof Sound || is_string($sound)) {
+            $this->sound = $sound;
+        }
 
         return $this;
     }
@@ -380,7 +383,7 @@ class Payload implements \JsonSerializable
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_BADGE_KEY} = $this->badge;
         }
 
-        if (is_string($this->sound)) {
+        if ($this->sound instanceof Sound || is_string($this->sound)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_SOUND_KEY} = $this->sound;
         }
 

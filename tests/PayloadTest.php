@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Pushok\InvalidPayloadException;
 use Pushok\Payload;
 use Pushok\Payload\Alert;
+use Pushok\Payload\Sound;
 
 class PayloadTest extends TestCase
 {
@@ -35,9 +36,10 @@ class PayloadTest extends TestCase
 
     public function testSetSound()
     {
-        $payload = Payload::create()->setSound('soundString');
+        $sound = Sound::create();
+        $payload = Payload::create()->setSound($sound);
 
-        $this->assertEquals('soundString', $payload->getSound());
+        $this->assertSame($sound, $payload->getSound());
     }
 
     public function testSetCategory()
@@ -104,10 +106,11 @@ class PayloadTest extends TestCase
     {
 
         $alert = Alert::create()->setTitle('title');
+        $sound = Sound::create()->setName('soundName')->setCritical(1)->setVolume(1.0);
         $payload = Payload::create()
             ->setAlert($alert)
             ->setBadge(1)
-            ->setSound('sound')
+            ->setSound($sound)
             ->setCategory('category')
             ->setThreadId('tread-id')
             ->setContentAvailability(true)
@@ -115,7 +118,7 @@ class PayloadTest extends TestCase
             ->setCustomValue('key', 'value');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": "sound", "category": "category", ' .
+            '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": {"critical": 1, "name": "soundName", "volume": 1.0}, "category": "category", ' .
             ' "thread-id": "tread-id", "mutable-content": 1, "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );
