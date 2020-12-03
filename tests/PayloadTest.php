@@ -133,4 +133,25 @@ class PayloadTest extends TestCase
 
         $this->assertEquals(gettype(json_decode($payload->toJson())->array), 'array');
     }
+
+    public function testJsonSizeException()
+    {
+        $this->expectException(InvalidPayloadException::class);
+
+        $alert = Alert::create()->setTitle(
+            str_repeat('title that is going to be waaaaaaay to big and is going to throw an error to avoid having a request failing', 40)
+        );
+        $sound = Sound::create()->setName('soundName')->setCritical(1)->setVolume(1.0);
+        $payload = Payload::create()
+            ->setAlert($alert)
+            ->setBadge(1)
+            ->setSound($sound)
+            ->setCategory('category')
+            ->setThreadId('tread-id')
+            ->setContentAvailability(true)
+            ->setMutableContent(true)
+            ->setCustomValue('key', 'value');
+
+         $payload->toJson();
+    }
 }
