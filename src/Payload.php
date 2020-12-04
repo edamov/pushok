@@ -46,6 +46,7 @@ class Payload implements \JsonSerializable
     const PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE = 5120;
     const PAYLOAD_BINARY_REGULAR_NOTIFICATION_MAXIMUM_SIZE = 2048;
 
+
     /**
      * The notification settings for your app on the user’s device determine whether an alert or banner is displayed.
      *
@@ -394,7 +395,11 @@ class Payload implements \JsonSerializable
      */
     public function toJson(): string
     {
-        return json_encode($this, JSON_UNESCAPED_UNICODE);
+        $str = json_encode($this, JSON_UNESCAPED_UNICODE);
+
+        $this->checkPayloadSize($str);
+
+        return $str;
     }
 
     /**
@@ -454,5 +459,22 @@ class Payload implements \JsonSerializable
     private static function getDefaultPayloadStructure()
     {
         return [self::PAYLOAD_ROOT_KEY => new \stdClass];
+    }
+
+    /**
+     * @param $jsonPayload
+     * @return void
+     * @throws InvalidPayloadException
+     */
+    private function checkPayloadSize($jsonPayload)
+    {
+        $strLength = strlen($jsonPayload);
+        if ('voip' === $this->getPushType()) {
+            if ($strLength > self::PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE) {
+                throw new InvalidPayloadException('Voip Payload size limit exceeded');
+            }
+        } elseif ($strLength > self::PAYLOAD_HTTP2_REGULAR_NOTIFICATION_MAXIMUM_SIZE) {
+            throw new InvalidPayloadException('Payload size limit exceeded');
+        }
     }
 }
