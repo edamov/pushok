@@ -65,6 +65,13 @@ class Client
      * @var resource
      */
     private $curlMultiHandle;
+	
+    /**
+     * options for curl
+     *
+     * @var resource
+     */
+    private $curlOptions = array();
 
     /**
      * Client constructor.
@@ -72,10 +79,11 @@ class Client
      * @param AuthProviderInterface $authProvider
      * @param bool $isProductionEnv
      */
-    public function __construct(AuthProviderInterface $authProvider, bool $isProductionEnv = false)
+    public function __construct(AuthProviderInterface $authProvider, bool $isProductionEnv = false, array $curlOptions = array())
     {
         $this->authProvider = $authProvider;
         $this->isProductionEnv = $isProductionEnv;
+		$this->curlOptions = $curlOptions; 
     }
 
     /**
@@ -187,7 +195,7 @@ class Client
 
         $this->authProvider->authenticateClient($request);
 
-        curl_setopt_array($ch, $request->getOptions());
+        curl_setopt_array($ch, $this->curlOptions + $request->getOptions());
         curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getDecoratedHeaders());
 
         // store device token to identify response
