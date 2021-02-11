@@ -56,6 +56,8 @@ $options = [
     'private_key_secret' => null // Private key secret
 ];
 
+// Be aware of thing that Token will stale after one hour, so you should generate it again.
+// Can be useful when trying to send pushes during long-running tasks
 $authProvider = AuthProvider\Token::create($options);
 
 $alert = Alert::create()->setTitle('Hello!');
