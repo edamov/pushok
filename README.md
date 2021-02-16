@@ -96,6 +96,7 @@ foreach ($responses as $response) {
 ```
 
 Using Certificate (.pem)
+
 ``` php
 <?php
 require __DIR__ . '/vendor/autoload.php';
@@ -134,7 +135,11 @@ foreach ($deviceTokens as $deviceToken) {
     $notifications[] = new Notification($payload,$deviceToken);
 }
 
-$client = new Client($authProvider, $production = false, [CURLOPT_SSL_VERIFYPEER=>false] );
+
+// If you have issues with ssl-verification, you can temporarily disable it. Please see attached note.
+// Disable ssl verification
+//$client = new Client($authProvider, $production = false, [CURLOPT_SSL_VERIFYPEER=>false] );
+$client = new Client($authProvider, $production = false);
 $client->addNotifications($notifications);
 
 
@@ -149,6 +154,7 @@ foreach ($responses as $response) {
     $response->getErrorDescription();
 }
 ```
+Note : Please see [this post](https://github.com/edamov/pushok/issues/124) about ssl verification
 
 
 ## Testing
