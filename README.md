@@ -38,6 +38,7 @@ $ composer require edamov/pushok
 
 ## Getting Started
 
+Using JWT token
 ``` php
 <?php
 require __DIR__ . '/vendor/autoload.php';
@@ -93,6 +94,62 @@ foreach ($responses as $response) {
     $response->getErrorDescription();
 }
 ```
+
+Using Certificate (.pem)
+``` php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use Pushok\AuthProvider;
+use Pushok\Client;
+use Pushok\Notification;
+use Pushok\Payload;
+use Pushok\Payload\Alert;
+
+$options = [
+    'app_bundle_id' => 'com.app.Test', // The bundle ID for app obtained from Apple developer account
+    'certificate_path' => __DIR__ . '/private_key.pem', // Path to private key
+    'certificate_secret' => null // Private key secret
+];
+
+// Be aware of thing that Token will stale after one hour, so you should generate it again.
+// Can be useful when trying to send pushes during long-running tasks
+$authProvider = AuthProvider\Certificate::create($options);
+
+$alert = Alert::create()->setTitle('Hello!');
+$alert = $alert->setBody('First push notification');
+
+$payload = Payload::create()->setAlert($alert);
+
+//set notification sound to default
+$payload->setSound('default');
+
+//add custom value to your notification, needs to be customized
+$payload->setCustomValue('key', 'value');
+
+$deviceTokens = ['<device_token_1>', '<device_token_2>', '<device_token_3>'];
+
+$notifications = [];
+foreach ($deviceTokens as $deviceToken) {
+    $notifications[] = new Notification($payload,$deviceToken);
+}
+
+$client = new Client($authProvider, $production = false, [CURLOPT_SSL_VERIFYPEER=>false] );
+$client->addNotifications($notifications);
+
+
+
+$responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
+
+foreach ($responses as $response) {
+    $response->getApnsId();
+    $response->getStatusCode();
+    $response->getReasonPhrase();
+    $response->getErrorReason();
+    $response->getErrorDescription();
+}
+```
+
 
 ## Testing
 
