@@ -38,7 +38,7 @@ $ composer require edamov/pushok
 
 ## Getting Started
 
-Using JWT token
+Using JWT token. See [Handling Notification Responses from APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns) for more info.
 ``` php
 <?php
 require __DIR__ . '/vendor/autoload.php';
@@ -79,6 +79,9 @@ foreach ($deviceTokens as $deviceToken) {
     $notifications[] = new Notification($payload,$deviceToken);
 }
 
+// If you have issues with ssl-verification, you can temporarily disable it. Please see attached note.
+// Disable ssl verification
+// $client = new Client($authProvider, $production = false, [CURLOPT_SSL_VERIFYPEER=>false] );
 $client = new Client($authProvider, $production = false);
 $client->addNotifications($notifications);
 
@@ -87,25 +90,27 @@ $client->addNotifications($notifications);
 $responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
 
 foreach ($responses as $response) {
+    // The device token
+    $response->getDeviceToken();
+    // A canonical UUID that is the unique ID for the notification. E.g. 123e4567-e89b-12d3-a456-4266554400a0
     $response->getApnsId();
+    
+    // Status code. E.g. 200 (Success), 410 (The device token is no longer active for the topic.)
     $response->getStatusCode();
+    // E.g. The device token is no longer active for the topic.
     $response->getReasonPhrase();
+    // E.g. Unregistered
     $response->getErrorReason();
+    // E.g. The device token is inactive for the specified topic.
     $response->getErrorDescription();
+    $response->get410Timestamp();
 }
 ```
 
-Using Certificate (.pem)
+Using Certificate (.pem). Only the initilization differs from JWT code (above). Remember to include the rest of the code by yourself.
 
 ``` php
 <?php
-require __DIR__ . '/vendor/autoload.php';
-
-use Pushok\AuthProvider;
-use Pushok\Client;
-use Pushok\Notification;
-use Pushok\Payload;
-use Pushok\Payload\Alert;
 
 $options = [
     'app_bundle_id' => 'com.app.Test', // The bundle ID for app obtained from Apple developer account
@@ -113,49 +118,31 @@ $options = [
     'certificate_secret' => null // Private key secret
 ];
 
-// Be aware of thing that Token will stale after one hour, so you should generate it again.
-// Can be useful when trying to send pushes during long-running tasks
 $authProvider = AuthProvider\Certificate::create($options);
 
-$alert = Alert::create()->setTitle('Hello!');
-$alert = $alert->setBody('First push notification');
+...
 
-$payload = Payload::create()->setAlert($alert);
+```
+Note : Please see [this post](https://github.com/edamov/pushok/issues/124) about ssl verification
 
-//set notification sound to default
-$payload->setSound('default');
+Options to fiddle around. See [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns)
+``` php
+<?php
 
-//add custom value to your notification, needs to be customized
-$payload->setCustomValue('key', 'value');
-
-$deviceTokens = ['<device_token_1>', '<device_token_2>', '<device_token_3>'];
-
-$notifications = [];
-foreach ($deviceTokens as $deviceToken) {
-    $notifications[] = new Notification($payload,$deviceToken);
-}
-
-
-// If you have issues with ssl-verification, you can temporarily disable it. Please see attached note.
-// Disable ssl verification
-//$client = new Client($authProvider, $production = false, [CURLOPT_SSL_VERIFYPEER=>false] );
 $client = new Client($authProvider, $production = false);
 $client->addNotifications($notifications);
 
 
+// Set the number of concurrent requests sent through the multiplexed connections. Default : 20
+$client->setNbConcurrentRequests( 40 );
 
-$responses = $client->push(); // returns an array of ApnsResponseInterface (one Response per Notification)
+// Set the number of maximum concurrent connections established to the APNS servers. Default : 1
+$client->setMaxConcurrentConnections( 5 );
 
-foreach ($responses as $response) {
-    $response->getApnsId();
-    $response->getStatusCode();
-    $response->getReasonPhrase();
-    $response->getErrorReason();
-    $response->getErrorDescription();
-}
+
+$responses = $client->push();
+
 ```
-Note : Please see [this post](https://github.com/edamov/pushok/issues/124) about ssl verification
-
 
 ## Testing
 
