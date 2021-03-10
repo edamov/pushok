@@ -341,11 +341,7 @@ class Payload implements \JsonSerializable
      */
     public function setCustomValue(string $key, $value): Payload
     {
-        if ($key === self::PAYLOAD_ROOT_KEY) {
-            throw InvalidPayloadException::reservedKey();
-        }
-
-        $this->customValues[$key] = $value;
+        $this->customValues = array_merge_recursive($this->customValues ? $this->customValues : [], [$key => $value]);
 
         return $this;
     }
