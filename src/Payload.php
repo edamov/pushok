@@ -411,7 +411,10 @@ class Payload implements \JsonSerializable
         if ($this->alert instanceof Alert) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
         } elseif(is_string($this->alert)){
-            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = json_decode($this->alert, true);
+            $json = json_decode($this->alert, true);
+            if($json){
+                $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $json;
+            }
         }
 
         if (is_int($this->badge)) {
