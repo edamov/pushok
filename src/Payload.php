@@ -414,6 +414,8 @@ class Payload implements \JsonSerializable
             $json = json_decode($this->alert, true);
             if($json){
                 $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $json;
+            } else {
+                $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
             }
         }
 
