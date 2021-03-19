@@ -135,7 +135,7 @@ class Payload implements \JsonSerializable
     /**
      * Get Alert.
      *
-     * @return Alert|null
+     * @return Alert|string|array|null
      */
     public function getAlert()
     {
@@ -145,13 +145,13 @@ class Payload implements \JsonSerializable
     /**
      * Set Alert.
      *
-     * @param Alert|string $alert
+     * @param Alert|string $alert|array $alert
      *
      * @return Payload
      */
     public function setAlert($alert): Payload
     {
-        if ($alert instanceof Alert || is_string($alert)) {
+        if ($alert instanceof Alert || is_string($alert) || is_array($alert)) {
             $this->alert = $alert;
         }
 
@@ -341,6 +341,26 @@ class Payload implements \JsonSerializable
      */
     public function setCustomValue(string $key, $value): Payload
     {
+        if ($key === self::PAYLOAD_ROOT_KEY) {
+            throw InvalidPayloadException::reservedKey();
+        }
+
+        $this->customValues[$key] = $value;
+
+        return $this;
+    }
+    
+    /**
+     * Merges custom value for Payload.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return Payload
+     * @throws InvalidPayloadException
+     */
+    public function addCustomValue(string $key, $value): Payload
+    {
         $this->customValues = array_merge_recursive($this->customValues ? $this->customValues : [], [$key => $value]);
 
         return $this;
@@ -417,6 +437,8 @@ class Payload implements \JsonSerializable
             } else {
                 $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
             }
+        } elseif (is_array($this->alert)){
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
         }
 
         if (is_int($this->badge)) {
