@@ -135,7 +135,7 @@ class Payload implements \JsonSerializable
     /**
      * Get Alert.
      *
-     * @return Alert|null
+     * @return Alert|string|array|null
      */
     public function getAlert()
     {
@@ -145,13 +145,13 @@ class Payload implements \JsonSerializable
     /**
      * Set Alert.
      *
-     * @param Alert|string $alert
+     * @param Alert|string $alert|array $alert
      *
      * @return Payload
      */
     public function setAlert($alert): Payload
     {
-        if ($alert instanceof Alert || is_string($alert)) {
+        if ($alert instanceof Alert || is_string($alert) || is_array($alert)) {
             $this->alert = $alert;
         }
 
@@ -349,6 +349,22 @@ class Payload implements \JsonSerializable
 
         return $this;
     }
+    
+    /**
+     * Merges custom value for Payload.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return Payload
+     * @throws InvalidPayloadException
+     */
+    public function addCustomValue(string $key, $value): Payload
+    {
+        $this->customValues = array_merge_recursive($this->customValues ? $this->customValues : [], [$key => $value]);
+
+        return $this;
+    }
 
     /**
      * Get custom value.
@@ -412,7 +428,16 @@ class Payload implements \JsonSerializable
     {
         $payload = self::getDefaultPayloadStructure();
 
-        if ($this->alert instanceof Alert || is_string($this->alert)) {
+        if ($this->alert instanceof Alert) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
+        } elseif(is_string($this->alert)){
+            $json = json_decode($this->alert, true);
+            if($json){
+                $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $json;
+            } else {
+                $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
+            }
+        } elseif (is_array($this->alert)){
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
         }
 
