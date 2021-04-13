@@ -466,7 +466,11 @@ class Payload implements \JsonSerializable
         }
 
         if (is_array($this->urlArgs)) {
-            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_URL_ARGS_KEY} = $this->urlArgs;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_URL_ARGS_KEY} = [];
+
+            foreach ($this->urlArgs as $key => $arg) {
+                $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_URL_ARGS_KEY}[] = $arg;
+            }
         }
 
         if (is_countable($this->customValues) && count($this->customValues)) {
