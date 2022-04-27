@@ -65,7 +65,7 @@ class Client
      * @var resource
      */
     private $curlMultiHandle;
-	
+
     /**
      * options for curl
      *
@@ -83,7 +83,7 @@ class Client
     {
         $this->authProvider = $authProvider;
         $this->isProductionEnv = $isProductionEnv;
-		$this->curlOptions = $curlOptions; 
+        $this->curlOptions = $curlOptions;
     }
 
     /**
