@@ -59,6 +59,4 @@ class ClientTest extends TestCase
         $this->assertIsResource($ch);
         $this->assertTrue(curl_errno($ch) === 0);
     }
-
-
 }

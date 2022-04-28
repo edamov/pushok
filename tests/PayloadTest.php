@@ -42,6 +42,14 @@ class PayloadTest extends TestCase
         $this->assertSame($sound, $payload->getSound());
     }
 
+    public function testSetInterruptionLevel()
+    {
+        $interruptionLevel = 'active';
+        $payload = Payload::create()->setInterruptionLevel($interruptionLevel);
+
+        $this->assertSame($interruptionLevel, $payload->getInterruptionLevel());
+    }
+
     public function testSetCategory()
     {
         $payload = Payload::create()->setCategory('categoryString');
@@ -111,6 +119,7 @@ class PayloadTest extends TestCase
             ->setAlert($alert)
             ->setBadge(1)
             ->setSound($sound)
+            ->setInterruptionLevel('time-sensitive')
             ->setCategory('category')
             ->setThreadId('tread-id')
             ->setContentAvailability(true)
@@ -118,7 +127,7 @@ class PayloadTest extends TestCase
             ->setCustomValue('key', 'value');
 
         $this->assertJsonStringEqualsJsonString(
-            '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": {"critical": 1, "name": "soundName", "volume": 1.0}, "category": "category", ' .
+            '{"aps": {"alert": {"title": "title"}, "badge": 1, "sound": {"critical": 1, "name": "soundName", "volume": 1.0}, "interruption-level": "time-sensitive", "category": "category", ' .
             ' "thread-id": "tread-id", "mutable-content": 1, "content-available": 1}, "key": "value"}',
             $payload->toJson()
         );

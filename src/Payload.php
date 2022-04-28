@@ -36,6 +36,7 @@ class Payload implements \JsonSerializable
     const PAYLOAD_ALERT_KEY = 'alert';
     const PAYLOAD_BADGE_KEY = 'badge';
     const PAYLOAD_SOUND_KEY = 'sound';
+    const PAYLOAD_INTERRUPTION_LEVEL_KEY = 'interruption-level';
     const PAYLOAD_CONTENT_AVAILABLE_KEY = 'content-available';
     const PAYLOAD_MUTABLE_CONTENT_KEY = 'mutable-content';
     const PAYLOAD_CATEGORY_KEY = 'category';
@@ -68,6 +69,13 @@ class Payload implements \JsonSerializable
      * @var Sound|string
      */
     private $sound;
+
+    /**
+     * The interruption level for the push notification.
+     *
+     * @var string
+     */
+    private $interruptionLevel;
 
     /**
      * Include this key with a value of true to configure a silent notification.
@@ -204,6 +212,30 @@ class Payload implements \JsonSerializable
         if ($sound instanceof Sound || is_string($sound)) {
             $this->sound = $sound;
         }
+
+        return $this;
+    }
+
+    /**
+     * Get interruption-level.
+     *
+     * @return string|null
+     */
+    public function getInterruptionLevel()
+    {
+        return $this->interruptionLevel;
+    }
+
+    /**
+     * Set interruption-level.
+     *
+     * @param string $interruptionLevel
+     *
+     * @return Payload
+     */
+    public function setInterruptionLevel($interruptionLevel): Payload
+    {
+        $this->interruptionLevel = $interruptionLevel;
 
         return $this;
     }
@@ -389,7 +421,8 @@ class Payload implements \JsonSerializable
      * @param string $pushType
      * @return Payload
      */
-    public function setPushType($pushType) {
+    public function setPushType($pushType)
+    {
         $this->pushType = $pushType;
 
         return $this;
@@ -400,7 +433,8 @@ class Payload implements \JsonSerializable
      *
      * @return string
      */
-    public function getPushType() {
+    public function getPushType()
+    {
         return $this->pushType;
     }
 
@@ -430,14 +464,14 @@ class Payload implements \JsonSerializable
 
         if ($this->alert instanceof Alert) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
-        } elseif(is_string($this->alert)){
+        } elseif (is_string($this->alert)) {
             $json = json_decode($this->alert, true);
-            if($json){
+            if ($json) {
                 $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $json;
             } else {
                 $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
             }
-        } elseif (is_array($this->alert)){
+        } elseif (is_array($this->alert)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ALERT_KEY} = $this->alert;
         }
 
@@ -447,6 +481,10 @@ class Payload implements \JsonSerializable
 
         if ($this->sound instanceof Sound || is_string($this->sound)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_SOUND_KEY} = $this->sound;
+        }
+
+        if (is_string($this->interruptionLevel)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_INTERRUPTION_LEVEL_KEY} = $this->interruptionLevel;
         }
 
         if (is_bool($this->contentAvailable)) {
