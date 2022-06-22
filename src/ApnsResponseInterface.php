@@ -25,6 +25,13 @@ interface ApnsResponseInterface
     public function getApnsId();
 
     /**
+     * Get device token
+     *
+     * @return string|null
+     */
+    public function getDeviceToken();
+
+    /**
      * Get status code.
      *
      * @return int|null
