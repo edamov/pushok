@@ -322,10 +322,10 @@ class Alert implements \JsonSerializable
     /**
      * Specify data which should be serialized to JSON.
      *
-     * @return array
+     * @return mixed
      * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $alert = [];
 
