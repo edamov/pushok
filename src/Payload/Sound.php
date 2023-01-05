@@ -139,7 +139,7 @@ class Sound implements \JsonSerializable
      * @return array
      * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $sound = [];
 
