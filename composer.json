@@ -61,7 +61,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.2"
+            "php": "8.2"
         }
     }
 }
