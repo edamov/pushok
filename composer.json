@@ -27,8 +27,8 @@
         "ext-json": "*",
         "ext-xml": "*",
         "ext-intl": "*",
-        "web-token/jwt-signature-algorithm-ecdsa": "^2.0",
-        "web-token/jwt-key-mgmt": "^2.0"
+        "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
+        "web-token/jwt-key-mgmt": "^3.0"
     },
     "require-dev": {
         "ext-xdebug": "*",
@@ -61,7 +61,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.2"
+            "php": "8.2"
         }
     }
 }

@@ -56,7 +56,7 @@ class ClientTest extends TestCase
 
         $ch = $method->invoke($client, $notification);
 
-        $this->assertIsResource($ch);
+        $this->assertIsObject($ch);
         $this->assertTrue(curl_errno($ch) === 0);
     }
 }
