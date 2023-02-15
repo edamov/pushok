@@ -42,6 +42,11 @@ class Payload implements \JsonSerializable
     const PAYLOAD_CATEGORY_KEY = 'category';
     const PAYLOAD_THREAD_ID_KEY = 'thread-id';
     const PAYLOAD_URL_ARGS_KEY = 'url-args';
+    const PAYLOAD_TIMESTAMP_KEY = 'timestamp';
+    const PAYLOAD_EVENT_KEY = 'event';
+    const PAYLOAD_RELEVANCE_SCORE_KEY = 'relevance-score';
+    const PAYLOAD_STALE_DATE_KEY = 'stale-date';
+    const PAYLOAD_CONTENT_STATE_KEY = 'content-state';
 
     const PAYLOAD_HTTP2_REGULAR_NOTIFICATION_MAXIMUM_SIZE = 4096;
     const PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE = 5120;
@@ -127,6 +132,42 @@ class Payload implements \JsonSerializable
      * @var string
      */
     private $pushType;
+
+    /**
+     * Relevance score
+     *
+     * @var double
+     */
+    private $relevanceScore;
+
+    /**
+     * Stale date
+     *
+     * @var double
+     */
+    private $staleDate;
+
+    /**
+     * Timestamp
+     *
+     * @var double
+     */
+    private $timestamp;
+
+    /**
+     * Event
+     *
+     * @var string
+     */
+    private $event;
+
+
+    /**
+     * Content state
+     *
+     * @var array
+     */
+    private $contentState;
 
     protected function __construct()
     {
@@ -381,7 +422,7 @@ class Payload implements \JsonSerializable
 
         return $this;
     }
-    
+
     /**
      * Merges custom value for Payload.
      *
@@ -436,6 +477,122 @@ class Payload implements \JsonSerializable
     public function getPushType()
     {
         return $this->pushType;
+    }
+
+    /**
+     * Set relevance score for Payload.
+     *
+     * @param double $relevanceScore
+     * @return Payload
+     */
+    public function setRelevanceScore($relevanceScore)
+    {
+        $this->relevanceScore = $relevanceScore;
+
+        return $this;
+    }
+
+    /**
+     * Get relevance score for Payload.
+     *
+     * @return double
+     */
+    public function getRelevanceScore()
+    {
+        return $this->relevanceScore;
+    }
+
+    /**
+     * Set stale date for Payload.
+     *
+     * @param double $staleDate
+     * @return Payload
+     */
+    public function setStaleDate($staleDate)
+    {
+        $this->staleDate = $staleDate;
+
+        return $this;
+    }
+
+    /**
+     * Get stale date for Payload.
+     *
+     * @return double
+     */
+    public function getStaleDate()
+    {
+        return $this->staleDate;
+    }
+
+    /**
+     * Set timestamp for Payload.
+     *
+     * @param double $timestamp
+     * @return Payload
+     */
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    /**
+     * Get timestamp for Payload.
+     *
+     * @return double
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * Set content-state for Payload.
+     *
+     * @param array $contentState
+     * @return Payload
+     */
+
+    public function setContentState($contentState)
+    {
+        $this->contentState = $contentState;
+
+        return $this;
+    }
+
+    /**
+     * Get content-state for Payload.
+     *
+     * @return array
+     */
+    public function getContentState()
+    {
+        return $this->contentState;
+    }
+
+    /**
+     * Set event for Payload.
+     *
+     * @param string $event
+     * @return Payload
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    /**
+     * Get event for Payload.
+     *
+     * @return string
+     */
+    public function getEvent()
+    {
+        return $this->event;
     }
 
     /**
@@ -509,6 +666,26 @@ class Payload implements \JsonSerializable
 
         if (is_countable($this->customValues) && count($this->customValues)) {
             $payload = array_merge($payload, $this->customValues);
+        }
+
+        if (is_countable($this->contentState) && count($this->contentState)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_CONTENT_STATE_KEY} = $this->contentState;
+        }
+
+        if (is_string($this->event)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_EVENT_KEY} = $this->event;
+        }
+
+        if (is_double($this->staleDate)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_STALE_DATE_KEY} = $this->staleDate;
+        }
+
+        if (is_double($this->timestamp)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_TIMESTAMP_KEY} = $this->timestamp;
+        }
+
+        if (is_double($this->relevanceScore)) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_RELEVANCE_SCORE_KEY} = $this->relevanceScore;
         }
 
         return $payload;
