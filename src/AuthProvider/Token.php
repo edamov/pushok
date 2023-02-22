@@ -153,6 +153,9 @@ class Token implements AuthProviderInterface
             case 'voip':
                 return $this->appBundleId . '.voip';
 
+            case 'liveactivity':
+                return $this->appBundleId . '.push-type.liveactivity';
+
             case 'complication':
                 return $this->appBundleId . '.complication';
 
