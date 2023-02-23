@@ -676,11 +676,11 @@ class Payload implements \JsonSerializable
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_EVENT_KEY} = $this->event;
         }
 
-        if (is_double($this->staleDate)) {
+        if (is_int($this->staleDate)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_STALE_DATE_KEY} = $this->staleDate;
         }
 
-        if (is_double($this->timestamp)) {
+        if (is_int($this->timestamp)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_TIMESTAMP_KEY} = $this->timestamp;
         }
 
