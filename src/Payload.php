@@ -458,6 +458,7 @@ class Payload implements \JsonSerializable
      * @return array
      * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $payload = self::getDefaultPayloadStructure();

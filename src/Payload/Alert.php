@@ -325,6 +325,7 @@ class Alert implements \JsonSerializable
      * @return array
      * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $alert = [];
