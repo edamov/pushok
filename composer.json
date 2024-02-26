@@ -21,19 +21,18 @@
     "require": {
         "php": "^8.1",
         "ext-curl": "*",
-        "lib-curl": ">=7.46.0",
-        "ext-openssl": "*",
-        "lib-openssl": ">=1.0.2.5",
-        "ext-json": "*",
-        "ext-xml": "*",
         "ext-intl": "*",
-        "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
-        "web-token/jwt-key-mgmt": "^3.0"
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-xml": "*",
+        "lib-curl": ">=7.46.0",
+        "lib-openssl": ">=1.0.2.5",
+        "web-token/jwt-library": "^3.0"
     },
     "require-dev": {
         "ext-xdebug": "*",
         "php-coveralls/php-coveralls": "^2.0",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^10.5",
         "squizlabs/php_codesniffer": "^3.4"
     },
     "autoload": {
