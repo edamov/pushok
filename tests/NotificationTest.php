@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Pushok\Notification;
 use Pushok\Payload;
 
-class MessageTest extends TestCase
+class NotificationTest extends TestCase
 {
     public function testGetDeviceToken()
     {
