@@ -177,7 +177,7 @@ class Alert implements \JsonSerializable
      * @param string|null $value
      * @return Alert
      */
-    public function setTitleLocKey(string $value = null): Alert
+    public function setTitleLocKey(?string $value = null): Alert
     {
         $this->titleLocKey = $value;
 
@@ -200,7 +200,7 @@ class Alert implements \JsonSerializable
      * @param array|null $value
      * @return Alert
      */
-    public function setTitleLocArgs(array $value = null): Alert
+    public function setTitleLocArgs(?array $value = null): Alert
     {
         $this->titleLocArgs = $value;
 
@@ -223,7 +223,7 @@ class Alert implements \JsonSerializable
      * @param string|null $value
      * @return Alert
      */
-    public function setActionLocKey(string $value = null): Alert
+    public function setActionLocKey(?string $value = null): Alert
     {
         $this->actionLocKey = $value;
 

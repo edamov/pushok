@@ -148,7 +148,7 @@ class Response implements ApnsResponseInterface
      * @param string $body
      * @param string $deviceToken
      */
-    public function __construct(int $statusCode, string $headers, string $body, string $deviceToken = null)
+    public function __construct(int $statusCode, string $headers, string $body, ?string $deviceToken = null)
     {
         $this->statusCode = $statusCode;
         $this->apnsId = self::fetchApnsId($headers);
