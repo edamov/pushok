@@ -21,16 +21,13 @@
     "require": {
         "php": "^8.1",
         "ext-curl": "*",
-        "ext-intl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
-        "ext-xml": "*",
         "lib-curl": ">=7.46.0",
         "lib-openssl": ">=1.0.2.5",
         "web-token/jwt-library": "^3.0"
     },
     "require-dev": {
-        "ext-xdebug": "*",
         "php-coveralls/php-coveralls": "^2.0",
         "phpunit/phpunit": "^10.5",
         "squizlabs/php_codesniffer": "^3.4"
