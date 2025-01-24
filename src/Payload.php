@@ -613,6 +613,7 @@ class Payload implements \JsonSerializable
 
     /**
      * Set attributes type for Payload.
+     * This is used to specify the interpreter of the attributes on the apple side.
      *
      * @param string $attributesType
      * @return Payload
@@ -762,6 +763,11 @@ class Payload implements \JsonSerializable
 
         if (is_double($this->relevanceScore)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_RELEVANCE_SCORE_KEY} = $this->relevanceScore;
+        }
+
+        if ($this->attributesType) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ATTRIBUTES_TYPE_KEY} = $this->attributesType;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ATTRIBUTES_KEY} = $this->attributes;
         }
 
         return $payload;
