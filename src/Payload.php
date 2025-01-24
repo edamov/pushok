@@ -176,14 +176,14 @@ class Payload implements \JsonSerializable
      *
      * @var string|null
      */
-    private string|null $attributesType;
+    private $attributesType;
 
     /**
      * Attributes
      *
      * @var array
      */
-    private array $attributes = [];
+    private $attributes = [];
 
     protected function __construct()
     {
