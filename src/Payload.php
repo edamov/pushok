@@ -47,6 +47,8 @@ class Payload implements \JsonSerializable
     const PAYLOAD_RELEVANCE_SCORE_KEY = 'relevance-score';
     const PAYLOAD_STALE_DATE_KEY = 'stale-date';
     const PAYLOAD_CONTENT_STATE_KEY = 'content-state';
+    const PAYLOAD_ATTRIBUTES_TYPE_KEY = 'attributes-type';
+    const PAYLOAD_ATTRIBUTES_KEY = 'attributes';
 
     const PAYLOAD_HTTP2_REGULAR_NOTIFICATION_MAXIMUM_SIZE = 4096;
     const PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE = 5120;
@@ -168,6 +170,20 @@ class Payload implements \JsonSerializable
      * @var array
      */
     private $contentState;
+
+    /**
+     * Attributes type
+     *
+     * @var string|null
+     */
+    private string|null $attributesType;
+
+    /**
+     * Attributes
+     *
+     * @var array
+     */
+    private array $attributes = [];
 
     protected function __construct()
     {
@@ -593,6 +609,66 @@ class Payload implements \JsonSerializable
     public function getEvent()
     {
         return $this->event;
+    }
+
+    /**
+     * Set attributes type for Payload.
+     *
+     * @param string $attributesType
+     * @return Payload
+     */
+    public function setAttributesType(string $attributesType): self
+    {
+        $this->attributesType = $attributesType;
+
+        return $this;
+    }
+
+    /**
+     * Get attributes type for Payload.
+     *
+     * @return string|null
+     */
+    public function getAttributesType(): string|null
+    {
+        return $this->attributesType;
+    }
+
+    /**
+     * Add an attribute to the payload.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return Payload
+     */
+    public function addAttribute(string $key, mixed $value): Payload
+    {
+        $this->attributes[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Add an array of attributes to the payload.
+     *
+     * @param array $attributes
+     * @return Payload
+     */
+    public function addAttributes(array $attributes): Payload
+    {
+        $this->attributes = array_merge($this->attributes, $attributes);
+
+        return $this;
+    }
+
+    /**
+     * Get Attributes
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 
     /**
