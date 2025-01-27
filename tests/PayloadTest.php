@@ -103,6 +103,23 @@ class PayloadTest extends TestCase
             ->getCustomValue('notExistingKey', 'value');
     }
 
+    public function testSetDismissalDate()
+    {
+        $payload = Payload::create()->setDismissalDate(123456789);
+
+        $this->assertEquals(123456789, $payload->getDismissalDate());
+    }
+
+    public function testDismissalDateJson()
+    {
+        $payload = Payload::create()
+            ->setDismissalDate(123456789);
+        $this->assertJsonStringEqualsJsonString(
+            '{"aps":{"dismissal-date":123456789}}',
+            $payload->toJson()
+        );
+    }
+
     public function testSetAttributesType()
     {
         $payload = Payload::create()->setAttributesType('attributesType');

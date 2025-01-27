@@ -47,6 +47,7 @@ class Payload implements \JsonSerializable
     const PAYLOAD_RELEVANCE_SCORE_KEY = 'relevance-score';
     const PAYLOAD_STALE_DATE_KEY = 'stale-date';
     const PAYLOAD_CONTENT_STATE_KEY = 'content-state';
+    const PAYLOAD_DISMISSAL_DATE_KEY = 'dismissal-date';
     const PAYLOAD_ATTRIBUTES_TYPE_KEY = 'attributes-type';
     const PAYLOAD_ATTRIBUTES_KEY = 'attributes';
 
@@ -184,6 +185,13 @@ class Payload implements \JsonSerializable
      * @var array
      */
     private $attributes = [];
+
+    /**
+     * Dismissal date
+     *
+     * @var int|null
+     */
+    private $dismissalDate;
 
     protected function __construct()
     {
@@ -672,6 +680,18 @@ class Payload implements \JsonSerializable
         return $this->attributes;
     }
 
+    public function setDismissalDate(int $value): Payload
+    {
+        $this->dismissalDate = $value;
+
+        return $this;
+    }
+
+    public function getDismissalDate(): int|null
+    {
+        return $this->dismissalDate;
+    }
+
     /**
      * Convert Payload to JSON.
      *
@@ -763,6 +783,10 @@ class Payload implements \JsonSerializable
 
         if (is_double($this->relevanceScore)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_RELEVANCE_SCORE_KEY} = $this->relevanceScore;
+        }
+
+        if ($this->dismissalDate) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_DISMISSAL_DATE_KEY} = (int) $this->getDismissalDate();
         }
 
         if ($this->attributesType) {
