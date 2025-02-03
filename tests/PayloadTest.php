@@ -103,6 +103,69 @@ class PayloadTest extends TestCase
             ->getCustomValue('notExistingKey', 'value');
     }
 
+    public function testSetDismissalDate()
+    {
+        $payload = Payload::create()->setDismissalDate(123456789);
+
+        $this->assertEquals(123456789, $payload->getDismissalDate());
+    }
+
+    public function testDismissalDateJson()
+    {
+        $payload = Payload::create()
+            ->setDismissalDate(123456789);
+        $this->assertJsonStringEqualsJsonString(
+            '{"aps":{"dismissal-date":123456789}}',
+            $payload->toJson()
+        );
+    }
+
+    public function testSetAttributesType()
+    {
+        $payload = Payload::create()->setAttributesType('attributesType');
+
+        $this->assertEquals('attributesType', $payload->getAttributesType());
+    }
+
+    public function testAddAttribute()
+    {
+        $payload = Payload::create()
+            ->addAttribute('key', 'value')
+            ->addAttribute('key2', 'value2');
+
+        $this->assertEquals(['key' => 'value', 'key2' => 'value2'], $payload->getAttributes());
+    }
+
+    public function testAddAttributesMergesWithExisting()
+    {
+        $payload = Payload::create()
+            ->addAttributes(['key3' => 'value3', 'key' => 'replaced'])
+            ->addAttributes(['key' => 'value', 'key2' => 'value2']);
+
+        $this->assertEquals(['key' => 'value', 'key2' => 'value2', 'key3' => 'value3'], $payload->getAttributes());
+    }
+
+    public function testAttributesJsonSerializeCorrectly()
+    {
+        $payload = Payload::create()
+            ->setAttributesType('attributesType')
+            ->addAttributes(['key' => 'value', 'key2' => 'value2']);
+        $this->assertJsonStringEqualsJsonString(
+            '{"aps":{"attributes-type":"attributesType","attributes":{"key":"value","key2":"value2"}}}',
+            $payload->toJson()
+        );
+    }
+
+    public function testAttributesIgnoredIfNoAttributesType()
+    {
+        $payload = Payload::create()
+            ->addAttributes(['key' => 'value', 'key2' => 'value2']);
+        $this->assertJsonStringEqualsJsonString(
+            '{"aps":{}}',
+            $payload->toJson()
+        );
+    }
+
     public function testSetPushType()
     {
         $payload = Payload::create()->setPushType('pushType');

@@ -47,6 +47,9 @@ class Payload implements \JsonSerializable
     const PAYLOAD_RELEVANCE_SCORE_KEY = 'relevance-score';
     const PAYLOAD_STALE_DATE_KEY = 'stale-date';
     const PAYLOAD_CONTENT_STATE_KEY = 'content-state';
+    const PAYLOAD_DISMISSAL_DATE_KEY = 'dismissal-date';
+    const PAYLOAD_ATTRIBUTES_TYPE_KEY = 'attributes-type';
+    const PAYLOAD_ATTRIBUTES_KEY = 'attributes';
 
     const PAYLOAD_HTTP2_REGULAR_NOTIFICATION_MAXIMUM_SIZE = 4096;
     const PAYLOAD_HTTP2_VOIP_NOTIFICATION_MAXIMUM_SIZE = 5120;
@@ -168,6 +171,27 @@ class Payload implements \JsonSerializable
      * @var array
      */
     private $contentState;
+
+    /**
+     * Attributes type
+     *
+     * @var string|null
+     */
+    private $attributesType;
+
+    /**
+     * Attributes
+     *
+     * @var array
+     */
+    private $attributes = [];
+
+    /**
+     * Dismissal date
+     *
+     * @var int|null
+     */
+    private $dismissalDate;
 
     protected function __construct()
     {
@@ -596,6 +620,79 @@ class Payload implements \JsonSerializable
     }
 
     /**
+     * Set attributes type for Payload.
+     * This is used to specify the interpreter of the attributes on the apple side.
+     *
+     * @param string $attributesType
+     * @return Payload
+     */
+    public function setAttributesType(string $attributesType): self
+    {
+        $this->attributesType = $attributesType;
+
+        return $this;
+    }
+
+    /**
+     * Get attributes type for Payload.
+     *
+     * @return string|null
+     */
+    public function getAttributesType(): string|null
+    {
+        return $this->attributesType;
+    }
+
+    /**
+     * Add an attribute to the payload.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return Payload
+     */
+    public function addAttribute(string $key, mixed $value): Payload
+    {
+        $this->attributes[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Add an array of attributes to the payload.
+     *
+     * @param array $attributes
+     * @return Payload
+     */
+    public function addAttributes(array $attributes): Payload
+    {
+        $this->attributes = array_merge($this->attributes, $attributes);
+
+        return $this;
+    }
+
+    /**
+     * Get Attributes
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    public function setDismissalDate(int $value): Payload
+    {
+        $this->dismissalDate = $value;
+
+        return $this;
+    }
+
+    public function getDismissalDate(): int|null
+    {
+        return $this->dismissalDate;
+    }
+
+    /**
      * Convert Payload to JSON.
      *
      * @return string
@@ -686,6 +783,15 @@ class Payload implements \JsonSerializable
 
         if (is_double($this->relevanceScore)) {
             $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_RELEVANCE_SCORE_KEY} = $this->relevanceScore;
+        }
+
+        if ($this->dismissalDate) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_DISMISSAL_DATE_KEY} = (int) $this->getDismissalDate();
+        }
+
+        if ($this->attributesType) {
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ATTRIBUTES_TYPE_KEY} = $this->attributesType;
+            $payload[self::PAYLOAD_ROOT_KEY]->{self::PAYLOAD_ATTRIBUTES_KEY} = $this->attributes;
         }
 
         return $payload;
