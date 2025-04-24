@@ -76,6 +76,16 @@ class Certificate implements AuthProviderInterface
      */
     public function authenticateClient(Request $request)
     {
+        # OpenSSL (versions 0.9.3 and later) also support "P12" for PKCS#12-encoded files.
+        # see https://curl.se/libcurl/c/CURLOPT_SSLCERTTYPE.html
+        $ext = pathinfo($this->certificatePath, \PATHINFO_EXTENSION);
+        if (preg_match('#^(der|p12)$#i', $ext)) {
+            $request->addOptions(
+                [
+                    CURLOPT_SSLCERTTYPE => strtoupper($ext)
+                ]
+            );
+        }
         $request->addOptions(
             [
                 CURLOPT_SSLCERT        => $this->certificatePath,

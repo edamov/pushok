@@ -39,6 +39,27 @@ class CertificateTest extends TestCase
         $this->assertSame($request->getOptions()[CURLOPT_SSLCERTPASSWD], $options['certificate_secret']);
     }
 
+    public function testAuthenticatingClientP12()
+    {
+        $certFile = tempnam(sys_get_temp_dir(), "mock_test_cert");
+        rename($certFile, $certFile .= '.p12');
+        try {
+            $options = [
+                'certificate_path' => $certFile,
+                'certificate_secret' => 'secret',
+                'app_bundle_id' => 'com.apple.test',
+            ];
+            $authProvider = Certificate::create($options);
+
+            $request = $this->createRequest();
+            $authProvider->authenticateClient($request);
+
+            $this->assertSame($request->getOptions()[CURLOPT_SSLCERTTYPE], 'P12');
+        } finally {
+            @\unlink($certFile);
+        }
+    }
+
     public function testVoipApnsTopic()
     {
         $options = $this->getOptions();

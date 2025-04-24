@@ -110,7 +110,7 @@ foreach ($responses as $response) {
 }
 ```
 
-Using Certificate (.pem). Only the initilization differs from JWT code (above). Remember to include the rest of the code by yourself.
+Using Certificate (.pem or .p12). Only the initilization differs from JWT code (above). Remember to include the rest of the code by yourself.
 
 ``` php
 <?php
