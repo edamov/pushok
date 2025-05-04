@@ -31,6 +31,11 @@ class Alert implements \JsonSerializable
     const ALERT_LAUNCH_IMAGE_KEY = 'launch-image';
 
     /**
+     * Backward compatibility w/ binary APNs protocol -- if used, all other properties are ignored and alert in payload is a string.
+     */
+    private string $simpleAlert;
+
+    /**
      * A short string describing the purpose of the notification.
      *
      * @var string
@@ -100,6 +105,13 @@ class Alert implements \JsonSerializable
     public static function create()
     {
         return new self();
+    }
+
+    public function setSimpleAlert(string $text): self
+    {
+        $this->simpleAlert = $text;
+
+        return $this;
     }
 
     /**
@@ -325,8 +337,12 @@ class Alert implements \JsonSerializable
      * @return array
      * @link   http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): array|string
     {
+        if (!empty($this->simpleAlert)) {
+            return $this->simpleAlert;
+        }
+        
         $alert = [];
 
         if (is_string($this->title)) {
