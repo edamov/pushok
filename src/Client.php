@@ -163,7 +163,6 @@ class Client
 
                 $responseCollection[] = new Response($statusCode, $headers, (string)$body, $token);
                 curl_multi_remove_handle($mh, $handle);
-                curl_close($handle);
 
                 if (!empty($this->notifications)) {
                     $notification = array_pop($this->notifications);
